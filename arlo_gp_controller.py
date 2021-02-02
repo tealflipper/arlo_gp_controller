@@ -93,8 +93,8 @@ class Nodo:
     __1m = 1.0
     __2m = 2.0
     __5m = 5.0
-    def __init__(self, padre, hijos, dato):
-        self.padre = padre 
+    def __init__(self, hijos, dato):
+        #self.padre = padre 
         self.hijos = hijos
         self.dato = dato
     
@@ -114,4 +114,6 @@ class Arbol:
     def crearArbolCompleto(self, profMax): 
         if profMax == 0:
             #ter <- terminales
-            ter = elegirElemento()
+            ter = self.elegirElemento()
+            return Nodo(NULL,NULL,ter)
+
