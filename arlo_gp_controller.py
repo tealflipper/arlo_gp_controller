@@ -93,12 +93,25 @@ class Nodo:
     __1m = 1.0
     __2m = 2.0
     __5m = 5.0
-    def __init__(self, hijos, instruccion):
-        self.hijos = self.hijos
-        self.instruccion = self.instruccion
+    def __init__(self, padre, hijos, dato):
+        self.padre = padre 
+        self.hijos = hijos
+        self.dato = dato
     
-    
+import random     
 
 class Arbol:
-    def __init__(self, raiz, niveles):
-        pass
+    #lista de terminales para el primer experimento
+    listaTerminales = ("MF1", "MF2", "MF3")
+    def __init__(self):
+        hijos = []
+        dato="null"
+        return Nodo(hijos, NULL, dato)
+    #elige todas las terminales?
+    def elegirElemento(self):
+        return random.choice(self.listaTerminales)
+
+    def crearArbolCompleto(self, profMax): 
+        if profMax == 0:
+            #ter <- terminales
+            ter = elegirElemento()
