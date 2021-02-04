@@ -8,6 +8,7 @@ Todas las terminales deberian ser una función
 Para el primer experimento solamente se usara un sensor
 """
 
+
 """
 Move forward, el robot se mueve hacia delante
 toma la lista lecturas de sensores s como entrada
@@ -63,7 +64,7 @@ def IFBMP(arg1, arg2):
 If stuck, detecta si el robot esta atascado
 Requiere de dos argumentos, si esta atascado se evalua el primero
 si no, se evalua el segundo
-"""
+""" 
 def IFSTK(arg1, arg2):
     pass
 
@@ -102,18 +103,24 @@ import random
 
 class Arbol:
     #lista de terminales para el primer experimento
-    listaTerminales = ("MF1", "MF2", "MF3")
+    listaTerminales = (MF1, MF2, MF3)
+    listaFuciones = (IFBMP, IFSTK, IFLTE, PROGN2)
     def __init__(self):
         hijos = []
         dato="null"
-        return Nodo(hijos, NULL, dato)
+        self.raiz = Nodo(hijos, dato)
     #elige todas las terminales?
-    def elegirElemento(self):
-        return random.choice(self.listaTerminales)
+    def elegirElemento(self, lista):
+        return random.choice(lista)
 
     def crearArbolCompleto(self, profMax): 
         if profMax == 0:
             #ter <- terminales
-            ter = self.elegirElemento()
-            return Nodo(NULL,NULL,ter)
+            ter = self.elegirElemento(self.listaTerminales)
+            # nodo raiz
+            return Nodo(None,ter)
+        else:
+            fun = self.elegirElemento(self.listaFuciones)
+            hijos= [self.crearArbolCompleto(profMax-1),self.crearArbolCompleto(profMax-1)]
+            return Nodo(hijos, fun)
 
