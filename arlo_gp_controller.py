@@ -105,7 +105,7 @@ class Arbol:
     #lista de terminales para el primer experimento
     listaTerminales = (MF1, MF2, MF3)
     listaFuciones = (IFBMP, IFSTK, IFLTE, PROGN2)
-    def __init__(self):
+    def __init__(self,raiz=None):
         hijos = []
         dato="null"
         self.raiz = Nodo(hijos, dato)
@@ -124,3 +124,20 @@ class Arbol:
             hijos= [self.crearArbolCompleto(profMax-1),self.crearArbolCompleto(profMax-1)]
             return Nodo(hijos, fun)
 
+    def crearArbolAcotado(self, profMax): 
+        if profMax == 0 or random.choice( ("Fun", "Term") ) == "Term":
+            #ter <- terminales
+            ter = self.elegirElemento(self.listaTerminales)
+            # nodo raiz
+            return Nodo(None,ter)
+        else:
+            fun = self.elegirElemento(self.listaFuciones)
+            hijos= [self.crearArbolCompleto(profMax-1),self.crearArbolCompleto(profMax-1)]
+            return Nodo(hijos, fun)
+
+def imprimirPostorden(nodo):
+    if nodo != None: #si nodo existe
+        for hijo in nodo.hijos:
+            imprimirPostorden(hijo)
+        print(nodo.dato)
+        
