@@ -88,8 +88,7 @@ def PROGN2(arg1, arg2):
 Entrada: un arbol a y una lista de sensores s
 Salida: indentificador para las funciones MF1, MF2 o MF3
 """
-def interpretar(a, s):
-    pass
+
 class Nodo:
     __1m = 1.0
     __2m = 2.0
@@ -101,14 +100,16 @@ class Nodo:
     
 import random     
 
-class Arbol:
+class Arbol(Nodo):
     #lista de terminales para el primer experimento
     listaTerminales = (MF1, MF2, MF3)
     listaFuciones = (IFBMP, IFSTK, IFLTE, PROGN2)
-    def __init__(self,raiz=None):
-        hijos = []
-        dato="null"
-        self.raiz = Nodo(hijos, dato)
+    def __init__(self, raiz=None):
+        self.raiz = None
+        if raiz : 
+            self.raiz = raiz
+
+
     #elige todas las terminales?
     def elegirElemento(self, lista):
         return random.choice(lista)
@@ -119,13 +120,17 @@ class Arbol:
             ter = self.elegirElemento(self.listaTerminales)
             # nodo raiz
             return Nodo(None,ter)
+            
         else:
             fun = self.elegirElemento(self.listaFuciones)
             hijos= [self.crearArbolCompleto(profMax-1),self.crearArbolCompleto(profMax-1)]
             return Nodo(hijos, fun)
 
+                    
+
     def crearArbolAcotado(self, profMax): 
-        if profMax == 0 or random.choice( ("Fun", "Term") ) == "Term":
+        choice = random.randint(0, 1)
+        if profMax == 0 or choice == 1:
             #ter <- terminales
             ter = self.elegirElemento(self.listaTerminales)
             # nodo raiz
@@ -135,9 +140,42 @@ class Arbol:
             hijos= [self.crearArbolCompleto(profMax-1),self.crearArbolCompleto(profMax-1)]
             return Nodo(hijos, fun)
 
-def imprimirPostorden(nodo):
-    if nodo != None: #si nodo existe
-        for hijo in nodo.hijos:
-            imprimirPostorden(hijo)
-        print(nodo.dato)
+    def __imprimirPostorden(self, arbol, nivel = 0):
+        if arbol != None: #si nodo existe
+            
+            if arbol.hijos!=None: 
+                for i in range (len(arbol.hijos)):
+                    imprimirPostorden(arbol.hijos[i], nivel+1)
+            print("\t"*nivel, nivel, arbol.dato)
+
+    def imprimirPostorden(self):
+        self.__imprimirPostorden(self.raiz)
+    
+    def __interpretar(self,nodo):
+        if self.raiz.hijos == None: #hoja
+            print (self.raiz.dato)
+        else:
+            print (self.raiz.dato)
+    def interpretar(self):
+        self.__interpretar(self.raiz)
+        
+        
+
+
+def imprimirPostorden(arbol, nivel = 0):
+    if arbol != None: #si nodo existe
+        if arbol.hijos!=None: 
+            for i in range (len(arbol.hijos)):
+                imprimirPostorden(arbol.hijos[i], nivel+1)
+        print("\t"*nivel, nivel, arbol.dato)
+
+
+def imprimirPreorden(arbol, nivel = 0):
+    if arbol != None: #si nodo existe
+        print("\t"*nivel, nivel, arbol.dato)
+        if arbol.hijos!=None: 
+            for i in range (len(arbol.hijos)):
+                imprimirPostorden(arbol.hijos[i], nivel+1)
+        
+        
         
