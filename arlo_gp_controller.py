@@ -93,13 +93,15 @@ class Nodo:
     __1m = 1.0
     __2m = 2.0
     __5m = 5.0
-    def __init__(self, hijos, dato):
+    def __init__(self, hijos, dato, tipoDato=None):
         #self.padre = padre 
         self.hijos = hijos
         self.dato = dato
+        self.tipoDato = tipoDato
     
 import random     
 
+#un arbol se puede representar con el nodo raiz, por eso hereda de él
 class Arbol(Nodo):
     #lista de terminales para el primer experimento
     listaTerminales = (MF1, MF2, MF3)
@@ -110,72 +112,93 @@ class Arbol(Nodo):
             self.raiz = raiz
 
 
-    #elige todas las terminales?
-    def elegirElemento(self, lista):
+    #metodo para elegir una terminal aleatoria
+    def __elegirElemento(self, lista):
         return random.choice(lista)
 
-    def crearArbolCompleto(self, profMax): 
+    """
+    crea un arbol completo con profMax de niveles y todos las hojas al mismo nivel
+    metodo privado
+    """
+    def __crearArbolCompleto(self, profMax): 
         if profMax == 0:
             #ter <- terminales
-            ter = self.elegirElemento(self.listaTerminales)
+            ter = self.__elegirElemento(self.listaTerminales)
             # nodo raiz
             return Nodo(None,ter)
             
         else:
-            fun = self.elegirElemento(self.listaFuciones)
-            hijos= [self.crearArbolCompleto(profMax-1),self.crearArbolCompleto(profMax-1)]
+            fun = self.__elegirElemento(self.listaFuciones)
+            hijos= [self.__crearArbolCompleto(profMax-1),self.__crearArbolCompleto(profMax-1)]
             return Nodo(hijos, fun)
 
-                    
+    #metodo publico para crear el arbol completo
+    def crearArbolCompleto(self, profmax):
+        self.raiz = self.__crearArbolCompleto(profMax=profmax)
 
-    def crearArbolAcotado(self, profMax): 
-        choice = random.randint(0, 1)
-        if profMax == 0 or choice == 1:
+    """
+    crea un arbol acotado con profMax de niveles, en cualquier nivel puede aparecer 
+    una hoja o nodo terminal
+    metodo privado
+    """
+    def __crearArbolAcotado(self, profMax): 
+        tipoNodo={"FUN":0, "TERM":1}
+        choice = random.randint(0, 1) # 0  es funcion, 1 es terminal
+        if profMax == 0 or choice == tipoNodo["TERM"]:
             #ter <- terminales
-            ter = self.elegirElemento(self.listaTerminales)
+            ter = self.__elegirElemento(self.listaTerminales)
             # nodo raiz
             return Nodo(None,ter)
         else:
-            fun = self.elegirElemento(self.listaFuciones)
-            hijos= [self.crearArbolCompleto(profMax-1),self.crearArbolCompleto(profMax-1)]
+            fun = self.__elegirElemento(self.listaFuciones)
+            hijos= [self.__crearArbolAcotado(profMax-1),self.__crearArbolAcotado(profMax-1)]
             return Nodo(hijos, fun)
+    #metodo publico para crear un arbol acotado
+    def crearArbolAcotado(self, prof):
+       self.raiz = self.__crearArbolAcotado(prof)
 
+    """
+    Metodo privado que imprime el arbol en post orden
+    """
     def __imprimirPostorden(self, arbol, nivel = 0):
         if arbol != None: #si nodo existe
             
             if arbol.hijos!=None: 
                 for i in range (len(arbol.hijos)):
-                    imprimirPostorden(arbol.hijos[i], nivel+1)
+                    self.__imprimirPostorden(arbol.hijos[i], nivel+1)
             print("\t"*nivel, nivel, arbol.dato)
 
     def imprimirPostorden(self):
+        print("\n\n")
         self.__imprimirPostorden(self.raiz)
     
-    def __interpretar(self,nodo):
-        if self.raiz.hijos == None: #hoja
-            print (self.raiz.dato)
+    """
+    Interpretación del arbol en post orden
+    """
+    def __valor(self, dato):
+        print("dato") 
+        return "x"
+
+    def __aplicar(self, dato, valorI=None, valorD=None):
+        if valorD != None and valorI != None:
+            print("función ", dato.__name__,valorI,valorD)
+            return "f(x)"
         else:
-            print (self.raiz.dato)
+            print("expresión", dato.__name__)
+            return "g()"
+
+    def __interpretar(self,nodo):
+        if nodo.hijos == None: #hoja
+            if nodo.tipoDato == "const" or nodo.tipoDato == "var":
+                return self.__valor(nodo.dato)
+            else:
+                self.__aplicar(nodo.dato)
+        else: #recorrer rama izquierda, derecha y aplicar funcion
+            valorI = self.__interpretar(nodo.hijos[0])
+            valorD = self.__interpretar(nodo.hijos[1])
+            return self.__aplicar(nodo.dato, valorI, valorD)
+
     def interpretar(self):
+        print("\n\n")
         self.__interpretar(self.raiz)
-        
-        
-
-
-def imprimirPostorden(arbol, nivel = 0):
-    if arbol != None: #si nodo existe
-        if arbol.hijos!=None: 
-            for i in range (len(arbol.hijos)):
-                imprimirPostorden(arbol.hijos[i], nivel+1)
-        print("\t"*nivel, nivel, arbol.dato)
-
-
-def imprimirPreorden(arbol, nivel = 0):
-    if arbol != None: #si nodo existe
-        print("\t"*nivel, nivel, arbol.dato)
-        if arbol.hijos!=None: 
-            for i in range (len(arbol.hijos)):
-                imprimirPostorden(arbol.hijos[i], nivel+1)
-        
-        
         
