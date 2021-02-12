@@ -14,7 +14,7 @@ Move forward, el robot se mueve hacia delante
 toma la lista lecturas de sensores s como entrada
 regresa el valor del sensor
 """
-def MF(self,s):
+def MF(s):
     print("Move forward")
 
 """
@@ -24,15 +24,15 @@ toma la lista lecturas de sensores s como entrada
 regresa un valor para avanzar, solamente en el la ultima condicion 
 avanzar
 """
-def MF1(self,s):
+def MF1(s=None):
     print("Move forward 1")
     return 1
 
-def MF2(self,s):
+def MF2(s=None):
     print("Move forward 2")
     return 2
 
-def MF3(self,s):
+def MF3(s=None):
     print("Move forward 3")
     return 3
 
@@ -41,7 +41,7 @@ Turn left, el robot gira a la izquierda 30°
 toma la lista lecturas de sensores s como entrada
 regresa el valor del sensor
 """
-def TL(self,s):
+def TL(s=None):
     print("Turn left")
 
 """
@@ -49,7 +49,7 @@ Turn right, el robot gira a la derecha 30°
 toma la lista lecturas de sensores s como entrada
 regresa el valor del sensor
 """
-def TR(self,s):
+def TR(s=None):
     print("Turn right")
 
 """
@@ -57,7 +57,7 @@ If bump, detecta si el robot esta esta chocando contra algo
 Requiere de dos argumentos, si esta chocando se evalua el primero
 si no, se evalua el segundo
 """
-def IFBMP(arg1, arg2):
+def IFBMP(arg1=None, arg2=None):
     pass
 
 """
@@ -65,7 +65,7 @@ If stuck, detecta si el robot esta atascado
 Requiere de dos argumentos, si esta atascado se evalua el primero
 si no, se evalua el segundo
 """ 
-def IFSTK(arg1, arg2):
+def IFSTK(arg1=None, arg2=None):
     pass
 
 """
@@ -75,13 +75,14 @@ comparacion entre los primeros dos argumentos. Si es
 cierta, se ejecuta el tercer argumento. Si no se ejecuta el cuarto
 argumento
 """
-def IFLTE(arg1, arg2, arg3, arg4):
-    return arg3 if arg1 <= arg2 else arg4
+def IFLTE(arg1=None, arg2=None, arg3=None, arg4=None):
+    #return arg3 if arg1 <= arg2 else arg4
+    return 30
 
 """
 Toma como entrada dos argumentos, los evalua y regresa el segundo
 """
-def PROGN2(arg1, arg2):
+def PROGN2(arg1=None, arg2=None):
     return arg2
 
 """
@@ -176,20 +177,19 @@ class Arbol(Nodo):
     Interpretación del arbol en post orden
     """
     def __valor(self, dato):
-        print("dato") 
-        return "x"
+        return dato
 
     def __aplicar(self, dato, valorI=None, valorD=None):
         if valorD != None and valorI != None:
-            print("función ", dato.__name__,valorI,valorD)
-            return "f(x)"
+            #print("función ", dato.__name__,valorI,valorD)
+            return dato()
         else:
-            print("expresión", dato.__name__)
-            return "g()"
+            #print("expresión", dato.__name__)
+            return dato(None)
 
     def __interpretar(self,nodo):
         if nodo.hijos == None: #hoja
-            if nodo.tipoDato == "const" or nodo.tipoDato == "var":
+            if isinstance(nodo.dato, int): # or nodo.tipoDato == "var":
                 return self.__valor(nodo.dato)
             else:
                 self.__aplicar(nodo.dato)
