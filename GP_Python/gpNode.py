@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 #Node Type
 class NType(Enum):
     FUNCTION    = 1
@@ -38,7 +38,3 @@ class Node:
     def isFunction(self):
         return (self.arity > 0) 
 
-        
-
-node = Node ("", 6)
-print(node.children)
