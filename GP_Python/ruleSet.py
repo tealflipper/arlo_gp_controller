@@ -12,16 +12,16 @@ class RuleSet:
     def addNonTerminalRule(self, rule):
         self.NonTerminals.append(rule)
     
-    def numTerminals(self):
+    def numTerminals(self) -> int:
         return len(self.Terminals)
     
-    def numNonTerminals(self):
+    def numNonTerminals(self) -> int:
         return len(self.NonTerminals)
 
-    def onlyTerminals(self):
+    def onlyTerminals(self) -> bool:
         return (self.numTerminals()>0 and self.numNonTerminals()==0)
 
-    def onlyNonTerminals(self):
+    def onlyNonTerminals(self) -> bool:
         return (self.numNonTerminals()>0 and self.numTerminals()==0)
 
     

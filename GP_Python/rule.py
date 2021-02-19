@@ -3,8 +3,8 @@ class Rule:
         self.ruleName = name
         self.members = elements
     
-    def numSymbols(self):
+    def numSymbols(self) -> int:
         return len(self.members)
     
-    def getElement(self,i):
+    def getElement(self,i) -> str:
         return self.members[i]

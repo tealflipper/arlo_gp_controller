@@ -1,14 +1,17 @@
 from ruleSet import RuleSet
 from rule import Rule
 from gpNode import Node
+import random
+import yaml
 
 
 class Tree:
     rules={}
     symTable={}
+    initialSymb = "S"
+    root = None
     def __init__(self):
-        self.root = None
-        self.depth=0
+        self.depth=0 #TODO: update value when creating tree
         self.initialSymb="S"
         #Lista de simbolos de la regla
         S = RuleSet("S")
@@ -20,8 +23,8 @@ class Tree:
 
         #reglas de expresion relacional
         ER = RuleSet("ER")
-        ER.addNonTerminal(Rule("<=", ("E","E")))
-        ER.addNonTerminal(Rule("==", ("E","E")))
+        ER.addNonTerminalRule(Rule("<=", ("E","E")))
+        ER.addNonTerminalRule(Rule("==", ("E","E")))
         self.rules["ER"] = ER
 
         #Reglas para expresiones
@@ -42,30 +45,103 @@ class Tree:
         # Esta línea se debe agregar cuando el simulador quiera evaluar el programa
         # symTable["SensorFrente"] = valor de entrada del programa;    
     
-    def __createTree(self,maxDepth, symbol, bias):
+    def __createTree(self,maxDepth, symbol, bias) -> Node:
         node = None
-
         rset = self.rules[symbol]
+        cutTree = self.__flip(bias)
 
-    def __flip(self, bias):
-        pass
+        if ((maxDepth <= 0 and rset.numTerminals() > 0) or
+        (cutTree and rset.numTerminals() > 0) or
+        rset.onlyTerminals()):
 
-    def __randInt(self, limit):
-        pass
+            #get random terminal rule from symbols
+            r= rset.Terminals[ self.__randInt(rset.numTerminals())]
+            node = Node(info=r.ruleName,arity=0)
+        else: 
+            # maxDepth != 0 or only has NT, For sure has NT and flip is false
+            # choose random NT rule from symbol
+            r= rset.NonTerminals[ self.__randInt(rset.numNonTerminals())]
+            node = Node(r.ruleName,r.numSymbols())
 
-    def __showTree(self,root, level):
-        pass
+            for i in range(r.numSymbols()):
+                node.setChild(i, self.__createTree(maxDepth-1, r.members[i], bias))
 
-    def createTreeFull(self,maxDepth, symbol, bias):  
-        pass
-    def createTreeGrow(self,maxDepth, symbol, bias):
-        pass
-    def evaluateTree(self,sensorValue=None, root= None):
-        pass
-    def showTree(self):
-        self.__showTree(self.root, 0)
+        return node
+
+    def __flip(self, bias) -> bool:
+        rnd = random.uniform(0.0,1.0)
+        if rnd > bias: return True
+        else: return False
+
+    def __randInt(self, limit) -> int:
+        return random.randint(0,limit-1)
+
+    def __evaluateTree(self, root) -> float:
+        if root.isTerminal(): 
+            return self.symTable[root.info]
+        else:
+            if root.info == "SiOtro":
+                testValue = self.__evaluateTree(root.getChild(0))
+                branchVal = None
+                if testValue == 1.0:
+                    branchVal = self.__evaluateTree(root.getChild(1))
+                else: 
+                    branchVal = self.__evaluateTree(root.getChild(2))
+                return branchVal
+
+            else:
+                leftVal = self.__evaluateTree(root.getChild(0))
+                rightVal = self.__evaluateTree(root.getChild(1))
+                return self.__apply(root.info, leftVal, rightVal)
+
+    def __apply(self, op, v1,v2) -> float:
+        if op == "<="   : return 1.0 if v1 <= v2 else 0.0
+        elif op == "<"    : return 1.0 if v1 < v2 else 0.0
+        elif op == "=="   : return 1.0 if v1 == v2 else 0.0
+        elif op == "+"    : return v1 + v2
+        elif op == "*"    : return v1*v2
+        else: 
+            print("[Apply] Unknown Operator")
+            return 0.0
+
+    def __showTree(self,root, level, spaces=None):
+        if root != None: 
+            if root.isFunction(): 
+                print("")
+                if spaces == None:print("\t"*level,end = '')
+                else: print(" "*(int(spaces)*level),end = '')
+                print("( ",end = '')
+            
+            print(" ",root.info, end=' ')
+            
+            for i in range(root.getArity()):
+                self.__showTree(root.getChild(i), level+1)
+            
+            if root.isFunction(): print(" )",end = '')
+            
+
+
+                
+                
+
+
+
+    def createTreeFull(self, maxDepth) -> Node:  
+        self.root = self.__createTree(maxDepth, self.initialSymb, 1.0)
+        return self.root
+
+    def createTreeGrow(self, maxDepth) -> Node:
+        self.root = self.__createTree(maxDepth, self.initialSymb, 0.5)
+        return self.root
+        
+    def evaluateTree(self,sensorValue) -> float:
+        self.symTable["SensorFrente"] = sensorValue
+        print("\n\n[ Symbol Table ] :")
+        self.showSymTable()
+        return self.__evaluateTree(self.root)
+
+    def showTree(self, spaces=None):
+        self.__showTree(self.root, 0, spaces)
         
     def showSymTable(self):
-        pass
-    def apply(self, d1,d2):
-        pass
+        print(yaml.dump(self.symTable, indent = 2))

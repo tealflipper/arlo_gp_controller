@@ -1,4 +1,6 @@
+from __future__ import annotations
 from enum import Enum
+
 #Node Type
 class NType(Enum):
     FUNCTION    = 1
@@ -17,24 +19,24 @@ class Node:
         else: 
             self.type = NType.TERMINAL if arity == 0 else NType.FUNCTION
         
-        self.children = [None]*self.arity
+        self.children = [None]*arity
         self.value = 0.0
 
-    def getArity(self):
+    def getArity(self) -> int:
         return len(self.children)
 
     def setChild(self, i, child):
         self.children[i]=child
 
-    def getChild(self, i):
+    def getChild(self, i) -> Node:
         if self.arity == 0:
             return None
         else:
             return self.children[i]
 
-    def isTerminal(self):
+    def isTerminal(self)->bool:
         return (self.arity == 0)
 
-    def isFunction(self):
+    def isFunction(self)->bool:
         return (self.arity > 0) 
 
