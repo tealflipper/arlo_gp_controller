@@ -10,6 +10,7 @@ class Tree:
     symTable={}
     initialSymb = "S"
     root = None
+    depth = 0
     def __init__(self):
         self.depth=0 #TODO: update value when creating tree
         self.initialSymb="S"
@@ -118,25 +119,20 @@ class Tree:
                 self.__showTree(root.getChild(i), level+1)
             
             if root.isFunction(): print(" )",end = '')
-            
-
-
-                
-                
-
-
 
     def createTreeFull(self, maxDepth) -> Node:  
         self.root = self.__createTree(maxDepth, self.initialSymb, 1.0)
+        self.depth = maxDepth
         return self.root
 
     def createTreeGrow(self, maxDepth) -> Node:
         self.root = self.__createTree(maxDepth, self.initialSymb, 0.5)
+        self.depth = maxDepth
         return self.root
         
     def evaluateTree(self,sensorValue) -> float:
         self.symTable["SensorFrente"] = sensorValue
-        print("\n\n[ Symbol Table ] :")
+        print("\n\n")
         self.showSymTable()
         return self.__evaluateTree(self.root)
 
@@ -144,4 +140,41 @@ class Tree:
         self.__showTree(self.root, 0, spaces)
         
     def showSymTable(self):
-        print(yaml.dump(self.symTable, indent = 2))
+        print(yaml.dump({"Symbol Table":self.symTable}, indent = 2))
+
+    def __mutate(self,root,pm):
+        """ Recorre todo el arbol y en cada nodo si el numero aleatorio es 
+            menor o igual a pm, probabilidad de mutación"""
+        if root != None and random.random() <= pm:
+            # print(root.info, self.rules["S"].Terminals[0].ruleName)
+            lvl = random.randint(5,8)
+            for key in self.rules:
+                rset = self.rules[key]
+                if root.info in rset.getRuleset():
+                    #make new branch
+                    cutTree = self.__flip(0.5)
+                    if (cutTree and rset.numTerminals() > 0 or
+                        rset.onlyTerminals()):
+                        r = rset.Terminals[ self.__randInt(rset.numTerminals())]
+                        root.info = r.ruleName
+                        root.children = []
+                        print (key,root.info)
+                    else: 
+                        r = rset.NonTerminals[ self.__randInt(rset.numNonTerminals())]
+                        root.info = r.ruleName
+                        root.arity = r.numSymbols()
+                        root.children = [None]*root.arity
+                        for i in range(r.numSymbols()):
+                            root.setChild(i, self.__createTree(lvl, r.members[i], 0.5))
+                        print (key,root.info)
+                        return root
+                else: 
+                    for child in root.children:
+                        self.__mutate(child,pm)
+
+    def __copyTree():
+        
+    
+    def mutate(self, pm):
+        # print(self.root.info, self.rules["S"].getRuleset())
+        self.__mutate(self.root, pm)

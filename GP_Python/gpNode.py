@@ -11,7 +11,7 @@ class NType(Enum):
     ACTION      = 6
 
 class Node:
-    def __init__(self, info, arity, type=None):
+    def __init__(self, info, arity, parent=None ,type=None):
         self.info = info
         self.arity = arity
         if type != None: 
@@ -21,6 +21,8 @@ class Node:
         
         self.children = [None]*arity
         self.value = 0.0
+        self.parent = parent
+
 
     def getArity(self) -> int:
         return len(self.children)

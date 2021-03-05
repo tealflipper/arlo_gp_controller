@@ -21,3 +21,8 @@ if __name__ == "__main__":
     robotAction = t2.evaluateTree(sensorValue)
 
     print("\n\nResultado evaluación","\n\tAccción: ", robotAction)
+    t1.showTree()
+    print("\n")
+    t1.mutate(0.9)
+    t1.showTree()
+    print("\n")

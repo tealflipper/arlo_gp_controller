@@ -24,4 +24,22 @@ class RuleSet:
     def onlyNonTerminals(self) -> bool:
         return (self.numNonTerminals()>0 and self.numTerminals()==0)
 
+    def getRuleset(self):
+        lst = []
+        for rule in self.Terminals:
+            lst.append(rule.ruleName)
+        for rule in self.NonTerminals:
+            lst.append(rule.ruleName)
+        return lst
+    def getTerminalSet(self):
+        lst = []
+        for rule in self.Terminals:
+            lst.append(rule.ruleName)
+        return lst
+    def getNonTerminalSet(self):
+        lst = []
+        for rule in self.NonTerminals:
+            lst.append(rule.ruleName)
+        return lst
+
     
