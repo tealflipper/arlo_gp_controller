@@ -46,10 +46,11 @@ class Tree:
         # Esta línea se debe agregar cuando el simulador quiera evaluar el programa
         # symTable["SensorFrente"] = valor de entrada del programa;    
     
-    def __createTree(self,maxDepth, symbol, bias) -> Node:
+    def __createTree(self,maxDepth=None, symbol='', bias=0.5, parent=None) -> Node:
         node = None
         rset = self.rules[symbol]
         cutTree = self.__flip(bias)
+        if maxDepth == None: return None
 
         if ((maxDepth <= 0 and rset.numTerminals() > 0) or
         (cutTree and rset.numTerminals() > 0) or
@@ -57,15 +58,15 @@ class Tree:
 
             #get random terminal rule from symbols
             r= rset.Terminals[ self.__randInt(rset.numTerminals())]
-            node = Node(info=r.ruleName,arity=0)
+            node = Node(info=r.ruleName,arity=0,parent=parent)
         else: 
             # maxDepth != 0 or only has NT, For sure has NT and flip is false
             # choose random NT rule from symbol
             r= rset.NonTerminals[ self.__randInt(rset.numNonTerminals())]
-            node = Node(r.ruleName,r.numSymbols())
+            node = Node(r.ruleName,r.numSymbols(),parent=parent)
 
             for i in range(r.numSymbols()):
-                node.setChild(i, self.__createTree(maxDepth-1, r.members[i], bias))
+                node.setChild(i, self.__createTree(maxDepth-1, r.members[i], bias, parent=node))
 
         return node
 
@@ -147,7 +148,7 @@ class Tree:
             menor o igual a pm, probabilidad de mutación"""
         if root != None and random.random() <= pm:
             # print(root.info, self.rules["S"].Terminals[0].ruleName)
-            lvl = random.randint(5,8)
+            lvl = random.randint(1,8)
             for key in self.rules:
                 rset = self.rules[key]
                 if root.info in rset.getRuleset():
@@ -172,8 +173,28 @@ class Tree:
                     for child in root.children:
                         self.__mutate(child,pm)
 
-    def __copyTree():
-        
+    def __copyTree(self,root):
+        new_tree = Node(root.info,root.arity,root.parent,root.type)
+        for i, child in enumerate(root.children):
+            new_tree.children[i] = child
+        for i in range(len(root.children)):
+            new_tree.children[i]=self.__copyTree(root.children[i])
+        return new_tree
+
+    def copyTree(self):
+        new_tree = Tree()
+        new_tree.root = self.__copyTree(self.root)
+        new_tree.depth = self.depth
+        return new_tree
+
+    def __chooseNode(self, node, bias):
+        chosen = self.__flip(bias)
+        if chosen: return node
+        else:
+            for child in node.children:
+                self.__chooseNode(child,bias)
+    def chooseNode(self, bias):
+        return self.__chooseNode(self.root,bias)
     
     def mutate(self, pm):
         # print(self.root.info, self.rules["S"].getRuleset())
