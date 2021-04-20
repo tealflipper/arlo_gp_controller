@@ -1,3 +1,4 @@
+from array import array
 from ruleSet import RuleSet
 from rule import Rule
 from gpNode import Node
@@ -187,14 +188,28 @@ class Tree:
         new_tree.depth = self.depth
         return new_tree
 
-    def __chooseNode(self, node, bias):
-        chosen = self.__flip(bias)
-        if chosen: return node
-        else:
-            for child in node.children:
-                self.__chooseNode(child,bias)
-    def chooseNode(self, bias):
-        return self.__chooseNode(self.root,bias)
+    def __getNodeArray(self, root,p, array):
+        if root != None:
+            # print(" ",root.info)
+            array.append(root)
+            for child in root.children:
+                self.__getNodeArray(child, p*2, array)
+
+            
+
+    def getNodeArray(self):
+        array = []
+        self.__getNodeArray(self.root,0.01,array)
+        return array
+
+    def choseNode(self):
+        nodeArray = self.getNodeArray()
+        beg = (len(nodeArray)//10)
+        print(beg)
+        place = random.randint(1,len(nodeArray)-1)
+        print(place)
+        return nodeArray[place]
+
     
     def mutate(self, pm):
         # print(self.root.info, self.rules["S"].getRuleset())

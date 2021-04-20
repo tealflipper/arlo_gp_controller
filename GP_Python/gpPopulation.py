@@ -3,6 +3,17 @@ import random
 
 
 class Population:
+
+    def __init__(self, size, type) -> None:
+        self.population = []
+        for i in range(size):
+            self.population.append(Tree())
+            randsize = 5 #TODO: change to random int
+            if type == "full":
+                self.population[i].createTreeFull(randsize)
+            else:
+                self.population[i].createTreeGrow(randsize)
+                
     def cross(self, A, B, bias):
         A2 = A.copyTree()
         B2 = B.copyTree()

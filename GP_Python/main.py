@@ -29,11 +29,11 @@ if __name__ == "__main__":
     t1_copy = t1.copyTree()
     t1_copy.showTree()
 
-    node = t1.chooseNode(0.1)
+    node = t1.chooseNode()
 
     print("\n Node: \n")
     tt = Tree ()
     tt.root = node
     tt.showTree()
     print("\n")
-    print(node)
+    print(node.info)

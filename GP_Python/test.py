@@ -1,40 +1,24 @@
-from ruleSet import RuleSet
-from rule import Rule
-from gpNode import Node
+from random import random
 import random
-import yaml
-rules = {}
+from gpTree import Tree
 
-S = RuleSet("S")
-S.addNonTerminalRule(Rule("SiOtro", ("ER", "S", "S") ) )
-S.addTerminalRule(Rule("Avanzar1", ("Avanzar1")))
-S.addTerminalRule(Rule("Avanzar2", ("Avanzar2")))
-S.addTerminalRule(Rule("Avanzar3", ("Avanzar3")))
-rules["S"]= S
 
-rset = rules["S"].symbol
-symbol = "S"
+if __name__ == "__main__":
+    t1 = Tree()
+    t1.createTreeFull(5)
+    print("[ Full method tree ]: ")
+    t1.showTree(spaces=2)
+    sensorValue = 5.0
+    robotAction = t1.evaluateTree(sensorValue)
 
-print(rset)
-print(random.randint(0,5))
-maxDepth = 1
-node = None
-rset = rules[symbol]
-cutTree =False
-if ((maxDepth <= 0 and rset.numTerminals) or
-    (cutTree and rset.onlyTerminals()) or
-    rset.onlyTerminals()):
-    #get random terminal rule from symbols
-    r= rset.Terminals[1]
-    node = Node(r.ruleName,0)
-else: 
-    # maxDepth != 0 or only has NT, For sure has NT and flip is false
-    # choose random NT rule from symbol
-    r= rset.NonTerminals[0]
-    node = Node(r.ruleName,r.numSymbols())
-
-a={'A':{'speed':70,
-        'color':2},
-        'B':{'speed':60,
-        'color':3}}
-print(yaml.dump(a, indent = 2))
+    print("\n\nResultado evaluación","\n\tAccción: ", robotAction)
+    print("\n\n")
+    
+    print("\n")
+    node = t1.choseNode()
+    tt = Tree()
+    tt.root = node
+    print("\n Node: \n")
+    tt.showTree()
+    print("\n")
+    # print(nodeArray)
