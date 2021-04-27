@@ -11,7 +11,7 @@ class NType(Enum):
     ACTION      = 6
 
 class Node:
-    def __init__(self, info, arity, parent=None ,type=None):
+    def __init__(self, info, arity, parent:Node = None ,type=None)->Node:
         self.info = info
         self.arity = arity
         if type != None: 
@@ -41,4 +41,11 @@ class Node:
 
     def isFunction(self)->bool:
         return (self.arity > 0) 
+    
+    def copyNode(self,new_parent:Node=None) -> Node:
+        """Does not copy the children of the node, that must be done from outside"""
+        copy = Node(info=self.info, arity=self.arity, parent=new_parent, type=self.type)
+        copy.value =self.value
+        return copy
+
 

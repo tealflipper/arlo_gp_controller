@@ -29,7 +29,7 @@ if __name__ == "__main__":
     t1_copy = t1.copyTree()
     t1_copy.showTree()
 
-    node = t1.chooseNode()
+    node = t1_copy.getRandomNode()
 
     print("\n Node: \n")
     tt = Tree ()

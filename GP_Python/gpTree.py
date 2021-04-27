@@ -47,7 +47,7 @@ class Tree:
         # Esta línea se debe agregar cuando el simulador quiera evaluar el programa
         # symTable["SensorFrente"] = valor de entrada del programa;    
     
-    def __createTree(self,maxDepth=None, symbol='', bias=0.5, parent=None) -> Node:
+    def __createTree(self,maxDepth=None, symbol='', bias=0.5, parent:Node=None) -> Node:
         node = None
         rset = self.rules[symbol]
         cutTree = self.__flip(bias)
@@ -79,7 +79,7 @@ class Tree:
     def __randInt(self, limit) -> int:
         return random.randint(0,limit-1)
 
-    def __evaluateTree(self, root) -> float:
+    def __evaluateTree(self, root:Node) -> float:
         if root.isTerminal(): 
             return self.symTable[root.info]
         else:
@@ -107,7 +107,7 @@ class Tree:
             print("[Apply] Unknown Operator")
             return 0.0
 
-    def __showTree(self,root, level, spaces=None):
+    def __showTree(self,root:Node, level, spaces=None):
         if root != None: 
             if root.isFunction(): 
                 print("")
@@ -140,11 +140,12 @@ class Tree:
 
     def showTree(self, spaces=None):
         self.__showTree(self.root, 0, spaces)
+        print("\n")
         
     def showSymTable(self):
         print(yaml.dump({"Symbol Table":self.symTable}, indent = 2))
 
-    def __mutate(self,root,pm):
+    def __mutate(self,root:Node,pm):
         """ Recorre todo el arbol y en cada nodo si el numero aleatorio es 
             menor o igual a pm, probabilidad de mutación"""
         if root != None and random.random() <= pm:
@@ -173,14 +174,12 @@ class Tree:
                 else: 
                     for child in root.children:
                         self.__mutate(child,pm)
-
-    def __copyTree(self,root):
-        new_tree = Node(root.info,root.arity,root.parent,root.type)
-        for i, child in enumerate(root.children):
-            new_tree.children[i] = child
+    #TODO: change to copy info from node
+    def __copyTree(self,root:Node,new_parent:Node=None):
+        new_node = root.copyNode(new_parent)
         for i in range(len(root.children)):
-            new_tree.children[i]=self.__copyTree(root.children[i])
-        return new_tree
+            new_node.children[i]=self.__copyTree(root.children[i], new_node)
+        return new_node
 
     def copyTree(self):
         new_tree = Tree()
@@ -188,7 +187,8 @@ class Tree:
         new_tree.depth = self.depth
         return new_tree
 
-    def __getNodeArray(self, root,p, array):
+    #node array in pre order
+    def __getNodeArray(self, root:Node,p, array:list):
         if root != None:
             # print(" ",root.info)
             array.append(root)
@@ -196,19 +196,31 @@ class Tree:
                 self.__getNodeArray(child, p*2, array)
 
             
-
-    def getNodeArray(self):
+    #regresa un árbol en forma de arreglo, recorre el árbol en preorden
+    def getNodeArray(self)->list:
         array = []
         self.__getNodeArray(self.root,0.01,array)
         return array
 
-    def choseNode(self):
+    """TODO: change to new algorithm
+    
+    IMPORTANT: stay away from ER ruleset, dont change these nodes, they will mutate instead
+    store in array in preorder
+    prob = random [0,1]
+    if prob <= 0.1
+        pick terminale node
+    else
+        pick nonterminal node
+    """
+    #regresa un nodo aleatorio del árbol
+    def getRandomNode(self)->Node:
         nodeArray = self.getNodeArray()
         beg = (len(nodeArray)//10)
-        print(beg)
-        place = random.randint(1,len(nodeArray)-1)
-        print(place)
-        return nodeArray[place]
+        if len(nodeArray) > 1: 
+            place = random.randint(1,len(nodeArray)-1)
+            return nodeArray[place]
+        else:
+            return self.root
 
     
     def mutate(self, pm):
