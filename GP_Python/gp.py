@@ -29,14 +29,16 @@ class GeneticProgram:
         index1 = 0
         index2 = 0
         
-        print(node1.info, node2.info)
+        # print(node1.info, node2.info)
         for i, child in enumerate(p1.children):
             # print(child, node1)
-            if child == node1: index1 = i
+            if child == node1: 
+                index1 = i
         
         for i, child in enumerate(p2.children):
             # print(child, node2)
-            if child == node2: index2 = i
+            if child == node2: 
+                index2 = i
         
         # print("\n\n",p1.children[index1].info, node1.info)
         # print("",p2.children[index2], node2)
@@ -55,10 +57,10 @@ class GeneticProgram:
         
         return A2, B2
 
-    def cross_test(self):
+    def crossTest(self):
         return self.__cross(self.population[0],self.population[1])
 
-    def show_population(self):
+    def showPopulation(self):
         for i,tree in enumerate(self.population):
             print("arbol ", i,": ")
             tree.showTree()

@@ -27,8 +27,8 @@ if __name__ == "__main__":
     # print(nodeArray)
 
     gp = GeneticProgram(2,"full")
-    gp.show_population()
-    t1,t2 = gp.cross_test()
+    gp.showPopulation()
+    t1,t2 = gp.crossTest()
 
     print("árboles con cruza")
     t1.showTree()

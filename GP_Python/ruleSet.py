@@ -36,6 +36,7 @@ class RuleSet:
         for rule in self.Terminals:
             lst.append(rule.ruleName)
         return lst
+        
     def getNonTerminalSet(self):
         lst = []
         for rule in self.NonTerminals:

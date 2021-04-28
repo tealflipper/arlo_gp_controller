@@ -1,4 +1,6 @@
-from array import array
+from __future__ import annotations
+
+from yaml import nodes
 from ruleSet import RuleSet
 from rule import Rule
 from gpNode import Node
@@ -10,9 +12,9 @@ class Tree:
     rules={}
     symTable={}
     initialSymb = "S"
-    root = None
+    root:Node = None
     depth = 0
-    def __init__(self):
+    def __init__(self)->Tree:
         self.depth=0 #TODO: update value when creating tree
         self.initialSymb="S"
         #Lista de simbolos de la regla
@@ -174,38 +176,64 @@ class Tree:
                 else: 
                     for child in root.children:
                         self.__mutate(child,pm)
+
     #TODO: change to copy info from node
-    def __copyTree(self,root:Node,new_parent:Node=None):
+    def __copyTree(self,root:Node,new_parent:Node=None)->Node:
         new_node = root.copyNode(new_parent)
         for i in range(len(root.children)):
             new_node.children[i]=self.__copyTree(root.children[i], new_node)
         return new_node
 
-    def copyTree(self):
+    def copyTree(self)->Tree:
         new_tree = Tree()
         new_tree.root = self.__copyTree(self.root)
         new_tree.depth = self.depth
         return new_tree
 
     #node array in pre order
-    def __getNodeArray(self, root:Node,p, array:list):
+    def __getNodeArray(self, root:Node, array:list)->list[Node]:
         if root != None:
             # print(" ",root.info)
             array.append(root)
             for child in root.children:
-                self.__getNodeArray(child, p*2, array)
-
-            
+                self.__getNodeArray(child,  array)
+    
     #regresa un árbol en forma de arreglo, recorre el árbol en preorden
-    def getNodeArray(self)->list:
+    def getNodeArray(self)->list[Node]:
         array = []
-        self.__getNodeArray(self.root,0.01,array)
+        self.__getNodeArray(self.root,array)
         return array
+
+    def __getTerminalNodes(self)->list[Node]:
+        """Return a list of terminal nodes"""
+
+        nodeArray = self.getNodeArray()
+        terminalNodeArray = []
+        for node in nodeArray:
+            if node.isTerminal(): 
+                terminalNodeArray.append(node)
+        
+        return terminalNodeArray
+
+    def __getNonTerminalNodes(self)->list[Node]:
+        """Return a list of non terminal nodes
+            excludes nodes with ER ruleset"""
+
+        nodeArray = self.getNodeArray()
+        # print("Node array")
+        ERNames = self.rules["ER"].getNonTerminalSet()
+                    
+        nonTerminalNodeArray = [node for node in nodeArray if not (node.info in ERNames) and not node.isTerminal()]
+        # for node in nonTerminalNodeArray:
+        #     print(node.info)
+        # print()
+        return nonTerminalNodeArray
+        
 
     """TODO: change to new algorithm
     
-    IMPORTANT: stay away from ER ruleset, dont change these nodes, they will mutate instead
-    store in array in preorder
+    IMPORTANT: stay away from ER ruleset, dont change these nodes, 
+    they will mutate instead be stored in an array in preorder
     prob = random [0,1]
     if prob <= 0.1
         pick terminale node
@@ -214,7 +242,13 @@ class Tree:
     """
     #regresa un nodo aleatorio del árbol
     def getRandomNode(self)->Node:
-        nodeArray = self.getNodeArray()
+        """Take a non terminal node 90% of the time 
+        and a terminal node 10% of the time"""
+        terminalnodes = self.__getTerminalNodes()
+        nonTerminalNodes = self.__getNonTerminalNodes()
+        #rnd > 0.1 if true is 90% and 10% if false
+        #take non terminal node if true and terminal if false
+        nodeArray = nonTerminalNodes  if self.__flip(0.1) else terminalnodes
         beg = (len(nodeArray)//10)
         if len(nodeArray) > 1: 
             place = random.randint(1,len(nodeArray)-1)
