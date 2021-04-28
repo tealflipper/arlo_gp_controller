@@ -1,4 +1,4 @@
-from array import array
+from __future__ import annotations
 from gpTree import Tree
 from gpNode import Node
 import random
@@ -15,7 +15,7 @@ class GeneticProgram:
             else:
                 self.population[i].createTreeGrow(randsize)
                 
-    #TODO: change copy node function to change parent in node copy
+    
     def __cross(self, A:Tree, B:Tree):
         #copies of A and B
         A2 = A.copyTree()
@@ -52,18 +52,47 @@ class GeneticProgram:
 
         return A2, B2
 
+    def selection (self,aptitud, sel):
+        if sel == "torneo":
+            ind = self.torneo(aptitud, 2)
+        else:
+            ind = self.ruleta(aptitud)
+        return ind
 
+
+    # Seleccion por torneo.
+    # Devuelve el indice del mejor individuo de t seleccionados aleatoriamente.
+    def torneo(self,aptitud, t):
+        # Se eligen t individuos de forma aleatoria
+        sel = sample(range(len(aptitud)), t)
         
+        # Se obtienen las aptitudes de los individuos seleccionados
+        aptitudsel = list(aptitud[i] for i in sel)
         
-        return A2, B2
+        #Se encuentra al individuo con mejor aptitud
+        win = aptitudsel.index(max(aptitudsel))
 
-    def crossTest(self):
-        return self.__cross(self.population[0],self.population[1])
+        return sel[win]
 
-    def showPopulation(self):
-        for i,tree in enumerate(self.population):
-            print("arbol ", i,": ")
-            tree.showTree()
-            print("\n\n")
-    
+
+    # Seleccion por ruleta.
+    # Devuelve el indice del individuo que gano en la ruleta.
+    def ruleta (self, aptitud):
+        phi = sum(aptitud)
+        rho = random()
+        suma = 0
+        while suma < rho:
+            i = choice(range(len(aptitud)))
+            suma = suma + aptitud[i] / phi
+        return i
+
+        def crossTest(self):
+            return self.__cross(self.population[0],self.population[1])
+
+        def showPopulation(self):
+            for i,tree in enumerate(self.population):
+                print("arbol ", i,": ")
+                tree.showTree()
+                print("\n\n")
+        
 
