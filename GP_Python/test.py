@@ -26,11 +26,11 @@ if __name__ == "__main__":
 
     # print(nodeArray)
 
-    gp = GeneticProgram(2,"full")
+    gp = GeneticProgram(4, 3, 5, 'full', 0.2)
     gp.showPopulation()
-    t1,t2 = gp.crossTest()
+    # t1,t2 = gp.crossTest()
 
-    print("árboles con cruza")
-    t1.showTree()
-    t2.showTree()
+    # print("árboles con cruza")
+    # t1.showTree()
+    # t2.showTree()
 

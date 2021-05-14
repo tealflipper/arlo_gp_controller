@@ -7,13 +7,15 @@ from gpNode import Node
 import random
 import yaml
 
-
+#TODO: comunicate with simulator
 class Tree:
     rules={}
     symTable={}
     initialSymb = "S"
     root:Node = None
     depth = 0
+    aptitud = None
+
     def __init__(self)->Tree:
         self.depth=0 #TODO: update value when creating tree
         self.initialSymb="S"
@@ -81,7 +83,9 @@ class Tree:
     def __randInt(self, limit) -> int:
         return random.randint(0,limit-1)
 
+    
     def __evaluateTree(self, root:Node) -> float:
+        # print(root.info,root.isTerminal())
         if root.isTerminal(): 
             return self.symTable[root.info]
         else:
@@ -98,6 +102,7 @@ class Tree:
                 leftVal = self.__evaluateTree(root.getChild(0))
                 rightVal = self.__evaluateTree(root.getChild(1))
                 return self.__apply(root.info, leftVal, rightVal)
+
 
     def __apply(self, op, v1,v2) -> float:
         if op == "<="   : return 1.0 if v1 <= v2 else 0.0
@@ -135,10 +140,12 @@ class Tree:
         return self.root
         
     def evaluateTree(self,sensorValue) -> float:
+        ##TODO: get sensor value from robot
         self.symTable["SensorFrente"] = sensorValue
-        print("\n\n")
-        self.showSymTable()
-        return self.__evaluateTree(self.root)
+        # print("\n\n")
+        # self.showSymTable()
+        self.aptitud = self.__evaluateTree(self.root)
+        return self.aptitud
 
     def showTree(self, spaces=None):
         self.__showTree(self.root, 0, spaces)

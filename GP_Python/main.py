@@ -3,7 +3,7 @@ from gpTree import Tree
 
 if __name__ == "__main__":
     t1 = Tree()
-    t1.createTreeFull(10)
+    t1.createTreeFull(5)
     print("[ Full method tree ]: ")
     t1.showTree(spaces=2)
     sensorValue = 5.0
