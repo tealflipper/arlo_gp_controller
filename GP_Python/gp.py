@@ -21,15 +21,15 @@ class GeneticProgram:
         self.initialPopulation(popSize,maxDepth,treeType)
         print(self.population)
         #may implement generation without improvement
-        self.showPopulation()
+        # self.showPopulation()
         for i in range(maxGen):
-            # self.showPopulation()
+            self.showPopulation()
             #evaluate individuals
             self.getAptitudes()
             #select parents
             parents = self.parentSelection(popSize, self.aptitudes,'torneo')
             #cross
-            print(parents)
+            # print(parents)
             offspring:list[Tree] = []
             for i in range(0,popSize,2):
                 parent1 = self.population[parents[i]]
@@ -91,6 +91,7 @@ class GeneticProgram:
         index1 = 0
         index2 = 0
         
+        #TODO: take root into acount
         # print(node1.info, node2.info)
         for i, child in enumerate(p1.children):
             # print(child, node1)

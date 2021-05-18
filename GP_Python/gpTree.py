@@ -154,6 +154,7 @@ class Tree:
     def showSymTable(self):
         print(yaml.dump({"Symbol Table":self.symTable}, indent = 2))
 
+    #TODO: fix bug in mutate concerning arity
     def __mutate(self,root:Node,pm):
         """ Recorre todo el arbol y en cada nodo si el numero aleatorio es 
             menor o igual a pm, probabilidad de mutación"""
@@ -169,8 +170,9 @@ class Tree:
                         rset.onlyTerminals()):
                         r = rset.Terminals[ self.__randInt(rset.numTerminals())]
                         root.info = r.ruleName
+                        root.arity = 0 #r.numSymbols()
                         root.children = []
-                        print (key,root.info)
+                        print ("Mutate:",key,root.info,root.arity)
                     else: 
                         r = rset.NonTerminals[ self.__randInt(rset.numNonTerminals())]
                         root.info = r.ruleName
@@ -178,7 +180,7 @@ class Tree:
                         root.children = [None]*root.arity
                         for i in range(r.numSymbols()):
                             root.setChild(i, self.__createTree(lvl, r.members[i], 0.5))
-                        print (key,root.info)
+                        print ("Mutate:",key,root.info)
                         return root
                 else: 
                     for child in root.children:
