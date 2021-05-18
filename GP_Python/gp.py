@@ -90,17 +90,17 @@ class GeneticProgram:
         p2 = node2.parent
         index1 = 0
         index2 = 0
-
-        # print(node1.info, node2.info)
-        for i, child in enumerate(p1.children):
-            # print(child, node1)
-            if child == node1: 
-                index1 = i
-        
-        for i, child in enumerate(p2.children):
-            # print(child, node2)
-            if child == node2: 
-                index2 = i
+        if p1 != None:
+            # print(node1.info, node2.info)
+            for i, child in enumerate(p1.children):
+                # print(child, node1)
+                if child == node1: 
+                    index1 = i
+        if p2 != None:
+            for i, child in enumerate(p2.children):
+                # print(child, node2)
+                if child == node2: 
+                    index2 = i
         
         # print("\n\n",p1.children[index1].info, node1.info)
         # print("",p2.children[index2], node2)
