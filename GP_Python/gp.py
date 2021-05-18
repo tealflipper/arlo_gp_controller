@@ -90,7 +90,7 @@ class GeneticProgram:
         p2 = node2.parent
         index1 = 0
         index2 = 0
-        
+
         # print(node1.info, node2.info)
         for i, child in enumerate(p1.children):
             # print(child, node1)
@@ -105,10 +105,26 @@ class GeneticProgram:
         # print("\n\n",p1.children[index1].info, node1.info)
         # print("",p2.children[index2], node2)
         #Exchange nodes
-        p1.children[index1] = node2
-        node2.parent=p1
-        p2.children[index2] = node1
-        node1.parent = p2
+        #node1 is root node and node2 is root node
+        if p1 == None and p2 == None:
+            A1.root = node2
+            A2.root = node1
+        #node1 is root node node2 is not root
+        elif p1 == None and p2 != None:
+            A1.root = node2
+            p2.children[index2] = node1
+            node1.parent = p2
+        #node2 is root node node1 is not root
+        elif p1 != None and p2 == None:
+            A2.root = node1
+            p1.children[index1] = node2
+            node2.parent=p1
+        #node1 and node2 are not root nodes
+        else: 
+            p1.children[index1] = node2
+            node2.parent=p1
+            p2.children[index2] = node1
+            node1.parent = p2
         # print("\n\n",p1.children[index1], node1)
         # print("",p2.children[index2], node2)
 
