@@ -1,7 +1,13 @@
+#!/usr/bin/env python3
 from __future__ import annotations
 from gpTree import Tree
 from gpNode import Node
 import random
+from arlo_gp_controller.srv import ActuatorValuesService, ActuatorValuesServiceResponse
+
+import rospy
+
+#Import ros libraries
 
 class GeneticProgram:
     population:list[Tree] = []
@@ -17,6 +23,11 @@ class GeneticProgram:
             treeType: tree type, full or grow
             pm: probability of mutation
         """
+        server = rospy.Service('actuator_values',ActuatorValuesService, handler=Tree.handleEvaluateTree)
+        
+
+        #rospy.init_node('EvaluateTree server')
+        #advertise ros service
         #generate random population of size popSize
         self.initialPopulation(popSize,maxDepth,treeType)
         print(self.population)
@@ -45,6 +56,9 @@ class GeneticProgram:
             for individual in self.population:
                 individual.mutate(pm)
         print(self.population)
+
+
+    
         
             
             

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from __future__ import annotations
 
 from yaml import nodes
@@ -6,6 +7,11 @@ from rule import Rule
 from gpNode import Node
 import random
 import yaml
+
+from arlo_gp_controller.srv import ActuatorValuesService, ActuatorValuesServiceResponse
+from std_msgs.msg import Float32MultiArray
+from arlo_nn_controller.srv import *
+import rospy
 
 #TODO: comunicate with simulator
 class Tree:
@@ -17,6 +23,12 @@ class Tree:
     aptitud = None
 
     def __init__(self)->Tree:
+
+        #ROS atributes
+        rospy.init_node('gp', anonymous=True)
+        # server = rospy.Service('actuator_values',ActuatorValuesService, handler=self.handleEvaluateTree)
+
+
         self.depth=0 #TODO: update value when creating tree
         self.initialSymb="S"
         #Lista de simbolos de la regla
@@ -42,15 +54,35 @@ class Tree:
         self.rules["E"]=E
 
         self.symTable["d1"] = 1.0
-        self.symTable["d2"] = 5.0
-        self.symTable["d3"] = 25.0
-        self.symTable["Avanzar1"] = 1
-        self.symTable["Avanzar2"] = 2
-        self.symTable["Avanzar3"] = 3
+        self.symTable["d2"] = 0.05
+        self.symTable["d3"] = 0.8
+        self.symTable["Avanzar1"] = [0.5,0]
+        self.symTable["Avanzar2"] = [0.75,0]
+        self.symTable["Avanzar3"] = [1.0,0]
 
         # Esta línea se debe agregar cuando el simulador quiera evaluar el programa
-        # symTable["SensorFrente"] = valor de entrada del programa;    
-    
+        # symTable["SensorFrente"] = valor de entrada del programa;  
+        # 
+    def handleEvaluateTree(self,req):
+        self.symTable["SensorFrente"] = req.sensorValues[15]
+        print("\n\n")
+        self.showSymTable()
+
+        resp = self.__evaluateTree(self.root)
+        rospy.rospy.loginfo("sensor value", req.sensorValues);
+        return ActuatorValuesServiceResponse([1.0,0])
+        pass
+
+    def evaluateDriverProxy(self,maxTime):
+        rospy.wait_for_service('evaluate_driver')
+        try:
+            evaluateDriver = rospy.ServiceProxy('evaluate_driver', EvaluateDriver)
+            resp = evaluateDriver(maxTime)
+            print("Evaluacion del arbol",resp)
+            return resp
+        except rospy.ServiceException as e:
+            print("Service call failed: %s"%e)
+
     def __createTree(self,maxDepth=None, symbol='', bias=0.5, parent:Node=None) -> Node:
         node = None
         rset = self.rules[symbol]
@@ -142,9 +174,11 @@ class Tree:
     def evaluateTree(self,sensorValue) -> float:
         ##TODO: get sensor value from robot
         self.symTable["SensorFrente"] = sensorValue
-        # print("\n\n")
-        # self.showSymTable()
+        print("\n\n")
+        self.showSymTable()
+
         self.aptitud = self.__evaluateTree(self.root)
+        print(self.aptitud)
         return self.aptitud
 
     def showTree(self, spaces=None):
