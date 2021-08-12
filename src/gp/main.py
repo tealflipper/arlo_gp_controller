@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
 import rospy
-from gp import GeneticProgram
+from gp import GeneticProgram, handleEvaluateTree
 
+from arlo_gp_controller.srv import ActuatorValuesService, ActuatorValuesServiceResponse
 
 if __name__ == "__main__":
-
     rospy.init_node('gp', anonymous=True)
+
+    server = rospy.Service('actuator_values',ActuatorValuesService, handler=handleEvaluateTree)
     
     # t1 = Tree()
     # t1.createTreeFull(5)
@@ -45,5 +47,22 @@ if __name__ == "__main__":
     # print(node.info)
     print("Programa Genetico \n --------------------------------------\n")
     gp = GeneticProgram(4, 3, 5, 'full', 0.2)
-    gp.showPopulation()
-    rospy.spin()
+    gp.setInitialPopulation()
+
+    for i in range(gp.maxGen):
+        
+        for index in range(gp.popSize):
+            gp.setAptitude(index)
+            
+        gp.setBestAptitud()
+        gp.setBestParent()
+        #select parents
+        gp.setParents('torneo')
+        #cross
+        #print(parents)
+        gp.cross()
+        #     #mutate
+        gp.mutatePopulation()
+        # print('pop', self.population)
+
+    #gp.showPopulation()

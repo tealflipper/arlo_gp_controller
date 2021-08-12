@@ -8,12 +8,17 @@ from arlo_gp_controller.srv import ActuatorValuesService, ActuatorValuesServiceR
 import rospy
 
 #Import ros libraries
+def handleEvaluateTree(req):
+        # tree.symTable["SensorFrente"] = req.sensorValues[15]
+        
+        print("\n",req.sensorValues[15],"\n")
+        # tree.showSymTable()
 
+        # resp = tree.__evaluateTree(tree.root)
+        print("sensor value", req.sensorValues);
+        return ActuatorValuesServiceResponse([1.0,0])
 class GeneticProgram:
-    population:list[Tree] = []
-    aptitudes:list = None
-    bestAptitud = -9999
-    bestParent = None
+    
     #problem in Tree.evaluate tree
     #TODO: suspected problem in copy tree
     def __init__(self, popSize, maxGen, maxDepth, treeType, pm) -> None:
@@ -23,46 +28,70 @@ class GeneticProgram:
             treeType: tree type, full or grow
             pm: probability of mutation
         """
-        server = rospy.Service('actuator_values',ActuatorValuesService, handler=Tree.handleEvaluateTree)
-        
+        self.popSize: int   = popSize
+        self.maxGen: int    = maxGen
+        self.maxDepth: int  = maxDepth
+        self.treeType: str  = treeType
+        self.pm: float      = pm
+        self.population:list[Tree] = []
+        self.aptitudes:list = None
+        self.bestAptitud = -9999
+        self.bestParent:Tree = None
+        self.parents: list[int] = []
 
-        #rospy.init_node('EvaluateTree server')
-        #advertise ros service
         #generate random population of size popSize
-        self.initialPopulation(popSize,maxDepth,treeType)
-        print(self.population)
+        # self.initialPopulation(self.popSize,self.maxDepth,self.treeType)
+        # print(self.population)
         #may implement generation without improvement
-        self.showPopulation()
-        for i in range(maxGen):
-            # self.showPopulation()
-            #evaluate individuals
-            self.getAptitudes()
-            #select parents
-            parents = self.parentSelection(popSize, self.aptitudes,'torneo')
-            #cross
-            print(parents)
-            offspring:list[Tree] = []
-            for i in range(0,popSize,2):
-                parent1 = self.population[parents[i]]
-                parent2= self.population[parents[i+1]]
-                # print(parent1,i)
-                # print(parent2,i+1)
-                newOffspring1, newOffspring2 = self.__cross(parent1, parent2)
-                offspring.append(newOffspring1)
-                offspring.append(newOffspring2)
-            #will use generational selection for the moment
-            self.population = offspring
-            #mutate
-            for individual in self.population:
-                individual.mutate(pm)
-        print(self.population)
+        # self.showPopulation()
+        # for i in range(maxGen):
+        #     # self.showPopulation()
+        #     #evaluate individuals
+        #     self.setAptitudes()
+        #     #select parents
+        #     parents = self.parentSelection(popSize, self.aptitudes,'torneo')
+        #     #cross
+        #     # print(parents)
+        #     offspring:list[Tree] = []
+        #     for i in range(0,popSize,2):
+        #         parent1 = self.population[parents[i]]
+        #         parent2= self.population[parents[i+1]]
+        #         # print(parent1,i)
+        #         # print(parent2,i+1)
+        #         newOffspring1, newOffspring2 = self.__cross(parent1, parent2)
+        #         offspring.append(newOffspring1)
+        #         offspring.append(newOffspring2)
+        #     #will use generational selection for the moment
+        #     self.population = offspring
+        #     #mutate
+        #     for individual in self.population:
+        #         individual.mutate(pm)
+        # print('pop', self.population)
 
 
     
+    def mutatePopulation(self):
+        for individual in self.population:
+            individual.mutate(self.pm)
+
+    def cross(self):
         
-            
-            
-    def initialPopulation(self, popSize,maxDepth,treeType):
+        offspring:list[Tree] = []
+        for i in range(0,self.popSize,2):
+            parent1 = self.population[self.parents[i]]
+            parent2= self.population[self.parents[i+1]]
+            # print(parent1,i)
+            # print(parent2,i+1)setAptitude
+            newOffspring1, newOffspring2 = self.__cross(parent1, parent2)
+            offspring.append(newOffspring1)
+            offspring.append(newOffspring2)
+        #will use generational selection for the moment
+        self.population = offspring
+
+    def setInitialPopulation(self):
+        return self._initialPopulation(self.popSize, self.maxDepth, self.treeType)
+
+    def _initialPopulation(self, popSize,maxDepth,treeType):
         #Generate random population
         self.aptitudes = [None]*popSize
         if treeType == "full":
@@ -76,7 +105,7 @@ class GeneticProgram:
         return self.population
             
 
-    def getAptitudes(self):
+    def setAptitudes(self):
         #evaluate Individual
         for i, individual in enumerate(self.population):
             #get sensor value from sim
@@ -90,7 +119,27 @@ class GeneticProgram:
         
         self.bestAptitud = max(self.aptitudes)
         self.bestParent  = self.population[self.aptitudes.index(self.bestAptitud)]
-            
+    
+    def setBestAptitud(self):
+        self.bestAptitud = max(self.aptitudes)
+    
+    def setBestParent(self):
+        self.bestParent  = self.population[self.aptitudes.index(self.bestAptitud)]
+    
+    def setAptitude(self, individualIndex: int) -> None:
+        """ sets aptitude for invidual given in population
+            individualIndex: index in population list in
+        """
+        #gets sensor value from simulation, has to call evaluateDriver service
+        sensorValue= 5 #simulates getting closer to target for everyone
+        #evaluate
+        individual = self.population[individualIndex]
+        individual.evaluateTree(sensorValue)
+        #get dist2go value from sim
+        dist2go = random.uniform(0.0,10.0)
+        individual.aptitud = 1.0/ sensorValue
+        self.aptitudes[individualIndex]= individual.aptitud
+        
     
     def __cross(self, A:Tree, B:Tree):
         #copies of A and B
@@ -143,6 +192,12 @@ class GeneticProgram:
         # print("",p2.children[index2], node2)
 
         return A2, B2
+
+    def setParents(self, selectionType):
+        """ sets the parent list for new generation in population
+        selectionType: 'torneo', 'ruleta'
+        """
+        self.parents = self.parentSelection(self.popSize, self.aptitudes,selectionType)
 
     def parentSelection(self,m, aptitud, sel):
         """m: size of population

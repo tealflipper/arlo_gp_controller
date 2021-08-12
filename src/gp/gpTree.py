@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from yaml import nodes
 from ruleSet import RuleSet
 from rule import Rule
 from gpNode import Node
+from pprint import pprint
 import random
-import yaml
+""" Note: currently, program only returns one of the actuator values needed for Gazebo and ROS
+    In the future, this will need to change in evaluateTree method. Instead of returning self.reaction
+    as a single variable, it will need to return list, or vector, of size 2 with actuator values 
+    for use in simulation
+    Change return value of evaluateTree method
+"""
 
-from arlo_gp_controller.srv import ActuatorValuesService, ActuatorValuesServiceResponse
+
+# from arlo_gp_controller.srv import ActuatorValuesService, ActuatorValuesServiceResponse
 from std_msgs.msg import Float32MultiArray
-from arlo_nn_controller.srv import *
+# from arlo_nn_controller.srv import *
 import rospy
 
 #TODO: comunicate with simulator
@@ -20,12 +26,11 @@ class Tree:
     initialSymb = "S"
     root:Node = None
     depth = 0
-    aptitud = None
+    reaction = None
 
     def __init__(self)->Tree:
 
         #ROS atributes
-        rospy.init_node('gp', anonymous=True)
         # server = rospy.Service('actuator_values',ActuatorValuesService, handler=self.handleEvaluateTree)
 
 
@@ -56,32 +61,32 @@ class Tree:
         self.symTable["d1"] = 1.0
         self.symTable["d2"] = 0.05
         self.symTable["d3"] = 0.8
-        self.symTable["Avanzar1"] = [0.5,0]
-        self.symTable["Avanzar2"] = [0.75,0]
-        self.symTable["Avanzar3"] = [1.0,0]
+        self.symTable["Avanzar1"] = 0.5
+        self.symTable["Avanzar2"] = 0.75
+        self.symTable["Avanzar3"] = 1.0
 
         # Esta línea se debe agregar cuando el simulador quiera evaluar el programa
         # symTable["SensorFrente"] = valor de entrada del programa;  
         # 
-    def handleEvaluateTree(self,req):
-        self.symTable["SensorFrente"] = req.sensorValues[15]
-        print("\n\n")
-        self.showSymTable()
+    # def handleEvaluateTree(self,req):
+    #     self.symTable["SensorFrente"] = req.sensorValues[15]
+    #     print("\n\n")
+    #     self.showSymTable()
 
-        resp = self.__evaluateTree(self.root)
-        rospy.rospy.loginfo("sensor value", req.sensorValues);
-        return ActuatorValuesServiceResponse([1.0,0])
-        pass
+    #     resp = self.__evaluateTree(self.root)
+    #     rospy.rospy.loginfo("sensor value", req.sensorValues);
+    #     return ActuatorValuesServiceResponse([1.0,0])
+    #     pass
 
-    def evaluateDriverProxy(self,maxTime):
-        rospy.wait_for_service('evaluate_driver')
-        try:
-            evaluateDriver = rospy.ServiceProxy('evaluate_driver', EvaluateDriver)
-            resp = evaluateDriver(maxTime)
-            print("Evaluacion del arbol",resp)
-            return resp
-        except rospy.ServiceException as e:
-            print("Service call failed: %s"%e)
+    # def evaluateDriverProxy(self,maxTime):
+    #     rospy.wait_for_service('evaluate_driver')
+    #     try:
+    #         evaluateDriver = rospy.ServiceProxy('evaluate_driver', EvaluateDriver)
+    #         resp = evaluateDriver(maxTime)
+    #         print("Evaluacion del arbol",resp)
+    #         return resp
+    #     except rospy.ServiceException as e:
+    #         print("Service call failed: %s"%e)
 
     def __createTree(self,maxDepth=None, symbol='', bias=0.5, parent:Node=None) -> Node:
         node = None
@@ -174,19 +179,20 @@ class Tree:
     def evaluateTree(self,sensorValue) -> float:
         ##TODO: get sensor value from robot
         self.symTable["SensorFrente"] = sensorValue
-        print("\n\n")
-        self.showSymTable()
+        # print("\n\n")
+        # self.showSymTable()
 
-        self.aptitud = self.__evaluateTree(self.root)
-        print(self.aptitud)
-        return self.aptitud
+        self.reaction = [self.__evaluateTree(self.root), 0.0]
+        print("reaction",self.reaction)
+        return self.reaction
 
     def showTree(self, spaces=None):
         self.__showTree(self.root, 0, spaces)
         print("\n")
         
     def showSymTable(self):
-        print(yaml.dump({"Symbol Table":self.symTable}, indent = 2))
+        pprint("Symbol Table:")
+        pprint(self.symTable)
 
     #TODO: fix bug in mutate concerning arity
     def __mutate(self,root:Node,pm):
@@ -206,7 +212,7 @@ class Tree:
                         root.info = r.ruleName
                         root.arity = 0 #r.numSymbols()
                         root.children = []
-                        print ("Mutate:",key,root.info,root.arity)
+                        # print ("Mutate:",key,root.info,root.arity)
                     else: 
                         r = rset.NonTerminals[ self.__randInt(rset.numNonTerminals())]
                         root.info = r.ruleName
@@ -214,7 +220,7 @@ class Tree:
                         root.children = [None]*root.arity
                         for i in range(r.numSymbols()):
                             root.setChild(i, self.__createTree(lvl, r.members[i], 0.5))
-                        print ("Mutate:",key,root.info)
+                        # print ("Mutate:",key,root.info)
                         return root
                 else: 
                     for child in root.children:
