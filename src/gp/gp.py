@@ -3,20 +3,10 @@ from __future__ import annotations
 from gpTree import Tree
 from gpNode import Node
 import random
-from arlo_gp_controller.srv import ActuatorValuesService, ActuatorValuesServiceResponse
-
+from arlo_gp_controller.srv import EvaluateTreeResponse
 import rospy
 
 #Import ros libraries
-def handleEvaluateTree(req):
-        # tree.symTable["SensorFrente"] = req.sensorValues[15]
-        
-        print("\n",req.sensorValues[15],"\n")
-        # tree.showSymTable()
-
-        # resp = tree.__evaluateTree(tree.root)
-        print("sensor value", req.sensorValues);
-        return ActuatorValuesServiceResponse([1.0,0])
 class GeneticProgram:
     
     #problem in Tree.evaluate tree
@@ -38,36 +28,6 @@ class GeneticProgram:
         self.bestAptitud = -9999
         self.bestParent:Tree = None
         self.parents: list[int] = []
-
-        #generate random population of size popSize
-        # self.initialPopulation(self.popSize,self.maxDepth,self.treeType)
-        # print(self.population)
-        #may implement generation without improvement
-        # self.showPopulation()
-        # for i in range(maxGen):
-        #     # self.showPopulation()
-        #     #evaluate individuals
-        #     self.setAptitudes()
-        #     #select parents
-        #     parents = self.parentSelection(popSize, self.aptitudes,'torneo')
-        #     #cross
-        #     # print(parents)
-        #     offspring:list[Tree] = []
-        #     for i in range(0,popSize,2):
-        #         parent1 = self.population[parents[i]]
-        #         parent2= self.population[parents[i+1]]
-        #         # print(parent1,i)
-        #         # print(parent2,i+1)
-        #         newOffspring1, newOffspring2 = self.__cross(parent1, parent2)
-        #         offspring.append(newOffspring1)
-        #         offspring.append(newOffspring2)
-        #     #will use generational selection for the moment
-        #     self.population = offspring
-        #     #mutate
-        #     for individual in self.population:
-        #         individual.mutate(pm)
-        # print('pop', self.population)
-
 
     
     def mutatePopulation(self):
@@ -126,18 +86,16 @@ class GeneticProgram:
     def setBestParent(self):
         self.bestParent  = self.population[self.aptitudes.index(self.bestAptitud)]
     
-    def setAptitude(self, individualIndex: int) -> None:
+    def setAptitude(self, individualIndex: int, dist2go) -> None:
         """ sets aptitude for invidual given in population
             individualIndex: index in population list in
         """
         #gets sensor value from simulation, has to call evaluateDriver service
-        sensorValue= 5 #simulates getting closer to target for everyone
+        # sensorValue= 5 #simulates getting closer to target for everyone
         #evaluate
         individual = self.population[individualIndex]
-        individual.evaluateTree(sensorValue)
         #get dist2go value from sim
-        dist2go = random.uniform(0.0,10.0)
-        individual.aptitud = 1.0/ sensorValue
+        individual.aptitud = 1.0/ dist2go
         self.aptitudes[individualIndex]= individual.aptitud
         
     

@@ -1,59 +1,39 @@
 #!/usr/bin/env python3
-
+from __future__ import annotations
 import rospy
-from gp import GeneticProgram, handleEvaluateTree
+from gp import GeneticProgram
 
-from arlo_gp_controller.srv import ActuatorValuesService, ActuatorValuesServiceResponse
+from arlo_gp_controller.srv import EvaluateTree, EvaluateTreeResponse
+from arlo_nn_controller.srv import EvaluateDriver
+
 
 if __name__ == "__main__":
     rospy.init_node('gp', anonymous=True)
 
-    server = rospy.Service('actuator_values',ActuatorValuesService, handler=handleEvaluateTree)
-    
-    # t1 = Tree()
-    # t1.createTreeFull(5)
-    # print("[ Full method tree ]: ")
-    # t1.showTree(spaces=2)
-    # sensorValue = 5.0
-    # robotAction = t1.evaluateTree(sensorValue)
-
-    # print("\n\nResultado evaluación","\n\tAccción: ", robotAction)
-    # print("\n\n")
-    
-
-    # t2 = Tree()
-    # t2.createTreeGrow(3)
-    # print("[ Grow method tree ]: ")
-    # t2.showTree(2)
-    # sensorValue = 5.0
-    # robotAction = t2.evaluateTree(sensorValue)
-
-    # print("\n\nResultado evaluación","\n\tAccción: ", robotAction)
-    # t1.showTree()
-    # print("\n")
-    # t1.mutate(0.9)
-    # t1.showTree()
-    # print("\n")
-    # t1_copy = t1.copyTree()
-    # t1_copy.showTree()
-
-    # node = t1_copy.getRandomNode()
-
-    # print("\n Node: \n")
-    # tt = Tree ()
-    # tt.root = node
-    # tt.showTree()
-    # print("\n")
-    # print(node.info)
     print("Programa Genetico \n --------------------------------------\n")
     gp = GeneticProgram(4, 3, 5, 'full', 0.2)
+    
+    def handleEvaluateTree(req):
+        print("evaluate tree:", req )
+        individual = gp.population[req.treeIndex]
+        sensorValue = req.sensorValues[15]
+        actuatorValues = individual.evaluateTree(sensorValue)
+        print(actuatorValues)
+        return EvaluateTreeResponse(actuatorValues)
+
+    server = rospy.Service('evaluate_tree',EvaluateTree, handler=handleEvaluateTree)
+    rospy.wait_for_service('evaluate_driver')
+    evaluateDriverClient = rospy.ServiceProxy('evaluate_driver', EvaluateDriver)
+
     gp.setInitialPopulation()
 
     for i in range(gp.maxGen):
         
         for index in range(gp.popSize):
-            gp.setAptitude(index)
-            
+            #maxtime, treeIndex
+            driverResponse = evaluateDriverClient(5,index)
+            gp.setAptitude(index,driverResponse.dist2go)
+
         gp.setBestAptitud()
         gp.setBestParent()
         #select parents
@@ -66,3 +46,5 @@ if __name__ == "__main__":
         # print('pop', self.population)
 
     #gp.showPopulation()
+    #keep active until kill signal is sent
+    rospy.spin()

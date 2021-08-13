@@ -58,12 +58,13 @@ class Tree:
         E.addTerminalRule(Rule("SensorFrente", ("SensorFrente")))
         self.rules["E"]=E
 
-        self.symTable["d1"] = 1.0
+        self.symTable["d1"] = 0.5
         self.symTable["d2"] = 0.05
-        self.symTable["d3"] = 0.8
-        self.symTable["Avanzar1"] = 0.5
-        self.symTable["Avanzar2"] = 0.75
-        self.symTable["Avanzar3"] = 1.0
+        self.symTable["d3"] = 0.08
+        self.symTable["Parar"] = 0.00
+        self.symTable["Avanzar1"] = 0.005
+        self.symTable["Avanzar2"] = 0.075
+        self.symTable["Avanzar3"] = 0.5
 
         # Esta línea se debe agregar cuando el simulador quiera evaluar el programa
         # symTable["SensorFrente"] = valor de entrada del programa;  
