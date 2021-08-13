@@ -11,14 +11,14 @@ if __name__ == "__main__":
     rospy.init_node('gp', anonymous=True)
 
     print("Programa Genetico \n --------------------------------------\n")
-    gp = GeneticProgram(4, 3, 5, 'full', 0.2)
+    gp = GeneticProgram(4, 1, 5, 'full', 0.02)
     
     def handleEvaluateTree(req):
-        print("evaluate tree:", req )
+        # print("evaluate tree:", req )
         individual = gp.population[req.treeIndex]
         sensorValue = req.sensorValues[15]
         actuatorValues = individual.evaluateTree(sensorValue)
-        print(actuatorValues)
+        #print("actuator values:", actuatorValues)
         return EvaluateTreeResponse(actuatorValues)
 
     server = rospy.Service('evaluate_tree',EvaluateTree, handler=handleEvaluateTree)
@@ -26,16 +26,18 @@ if __name__ == "__main__":
     evaluateDriverClient = rospy.ServiceProxy('evaluate_driver', EvaluateDriver)
 
     gp.setInitialPopulation()
-
-    for i in range(gp.maxGen):
-        
+    print("Genetic Program Start")
+    for generation in range(gp.maxGen):
+        print("generation:", generation)
         for index in range(gp.popSize):
+            print("\tIndividual: ",index)
             #maxtime, treeIndex
-            driverResponse = evaluateDriverClient(5,index)
+            driverResponse = evaluateDriverClient(20,index)
             gp.setAptitude(index,driverResponse.dist2go)
 
         gp.setBestAptitud()
         gp.setBestParent()
+
         #select parents
         gp.setParents('torneo')
         #cross
@@ -44,7 +46,8 @@ if __name__ == "__main__":
         #     #mutate
         gp.mutatePopulation()
         # print('pop', self.population)
-
-    #gp.showPopulation()
+    print("Best individual")
+    print("Aptitud:",gp.bestAptitud)
+    gp.bestParent.showTree()
     #keep active until kill signal is sent
-    rospy.spin()
+    # rospy.spin()
