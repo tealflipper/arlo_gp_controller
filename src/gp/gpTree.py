@@ -42,6 +42,7 @@ class Tree:
         S.addTerminalRule(Rule("Avanzar1", ("Avanzar1")))
         S.addTerminalRule(Rule("Avanzar2", ("Avanzar2")))
         S.addTerminalRule(Rule("Avanzar3", ("Avanzar3")))
+        S.addTerminalRule(Rule("Parar", ("Parar")))
         self.rules["S"]= S
 
         #reglas de expresion relacional
@@ -184,7 +185,7 @@ class Tree:
         # self.showSymTable()
 
         self.reaction = [self.__evaluateTree(self.root), 0.0]
-        print("reaction",self.reaction)
+        # print("reaction",self.reaction)
         return self.reaction
 
     def showTree(self, spaces=None):
