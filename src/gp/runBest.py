@@ -14,13 +14,8 @@ import pickle
 if __name__ == "__main__":
     rospy.init_node('gp', anonymous=True)
 
-    print("Programa Genetico \n --------------------------------------\n")
-    popSize = int(input("population size: "))
-    generations = int(input("number of generations: "))
-    treeDepth   = int(input("max tree depth: "))
-    mutationProbability = float(input("mutation probability: "))
-    gp = GeneticProgram(popSize, generations, treeDepth, 'full', mutationProbability)
-    
+    print("Mejor Individuo \n --------------------------------------\n")
+    gp = None
     def handleEvaluateTree(req):
         # print("evaluate tree:", req )
         individual = None
@@ -38,34 +33,17 @@ if __name__ == "__main__":
     rospy.wait_for_service('evaluate_driver')
     evaluateDriverClient = rospy.ServiceProxy('evaluate_driver', EvaluateDriver)
 
-    gp.setInitialPopulation()
-    print("Genetic Program Start")
-    for generation in range(gp.maxGen):
-        print("generation:", generation)
-        for index in range(gp.popSize):
-            print("\tIndividual: ",index)
-            #maxtime, treeIndex
-            driverResponse = evaluateDriverClient(60,index)
-            gp.setAptitude(index,driverResponse.dist2go)
-
-        gp.setBestAptitud()
-        gp.setBestParent()
-
-        #select parents
-        gp.setParents('torneo')
-        #cross
-        #print(parents)
-        gp.cross()
-        #     #mutate
-        gp.mutatePopulation()
-        # print('pop', self.population)
+    with open ('gp.dat', 'rb') as gpFile:
+        gp = pickle.load(gpFile)
+        gp.besParent = Tree()
+        print('GP loaded from gp.dat\n')
+        gp.population[0].showSymTable()
+        
+    
     print("Best individual")
     print("Aptitud:",gp.bestAptitud)
     gp.bestParent.showTree()
     evaluateDriverClient(60,-1)
     # save gp to file
-    with open ('gp.dat', 'wb') as gpFile:
-        pickle.dump(gp, gpFile )
-        print('GP saved to gp.dat')
     #keep active until kill signal is sentpop
     # rospy.spin()

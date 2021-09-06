@@ -95,6 +95,8 @@ class GeneticProgram:
         #evaluate
         individual = self.population[individualIndex]
         #get dist2go value from sim
+        if dist2go == 0.0:
+            dist2go = float('inf')
         individual.aptitud = 1.0/ dist2go
         self.aptitudes[individualIndex]= individual.aptitud
         

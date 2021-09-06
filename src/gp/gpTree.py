@@ -18,7 +18,14 @@ import random
 from std_msgs.msg import Float32MultiArray
 # from arlo_nn_controller.srv import *
 import rospy
-
+D1 = 1
+D2 = 1.5
+D3 = 2
+PARAR = 3
+AVANZAR1 = 4
+AVANZAR2 = 5
+AVANZAR3 = 6
+VUELTA = 7
 #TODO: comunicate with simulator
 class Tree:
     rules={}
@@ -39,10 +46,11 @@ class Tree:
         #Lista de simbolos de la regla
         S = RuleSet("S")
         S.addNonTerminalRule(Rule("SiOtro", ("ER", "S", "S") ) )
+        S.addTerminalRule(Rule("Parar", ("Parar")))
         S.addTerminalRule(Rule("Avanzar1", ("Avanzar1")))
         S.addTerminalRule(Rule("Avanzar2", ("Avanzar2")))
         S.addTerminalRule(Rule("Avanzar3", ("Avanzar3")))
-        S.addTerminalRule(Rule("Parar", ("Parar")))
+        S.addTerminalRule(Rule("Vuelta", ("Vuelta")))
         self.rules["S"]= S
 
         #reglas de expresion relacional
@@ -54,18 +62,21 @@ class Tree:
         #Reglas para expresiones
         E = RuleSet("E")
         E.addTerminalRule(Rule("d1", ("d1")))
-        E.addTerminalRule(Rule("d2", ("d2")))
-        E.addTerminalRule(Rule("d3", ("d3")))
+        # E.addTerminalRule(Rule("d2", ("d2")))
+        # E.addTerminalRule(Rule("d3", ("d3")))
         E.addTerminalRule(Rule("SensorFrente", ("SensorFrente")))
+        E.addTerminalRule(Rule("SensorDerecho", ("SensorDerecho")))
+        E.addTerminalRule(Rule("SensorIzquierdo", ("SensorIzquierdo")))
         self.rules["E"]=E
 
-        self.symTable["d1"] = 0.5
-        self.symTable["d2"] = 0.05
-        self.symTable["d3"] = 0.08
-        self.symTable["Parar"] = 0.00
-        self.symTable["Avanzar1"] = 0.005
-        self.symTable["Avanzar2"] = 0.075
-        self.symTable["Avanzar3"] = 0.5
+        self.symTable["d1"] = D1
+        # self.symTable["d2"] = D2
+        # self.symTable["d3"] = D3
+        self.symTable["Parar"] = PARAR
+        self.symTable["Avanzar1"] = AVANZAR1
+        self.symTable["Avanzar2"] = AVANZAR2
+        self.symTable["Avanzar3"] = AVANZAR3
+        self.symTable["Vuelta"] = VUELTA
 
         # Esta línea se debe agregar cuando el simulador quiera evaluar el programa
         # symTable["SensorFrente"] = valor de entrada del programa;  
@@ -178,13 +189,30 @@ class Tree:
         self.depth = maxDepth
         return self.root
         
-    def evaluateTree(self,sensorValue) -> float:
+    def evaluateTree(self,sensorValues) -> float:
         ##TODO: get sensor value from robot
-        self.symTable["SensorFrente"] = sensorValue
+        self.symTable["SensorFrente"] = sensorValues[15]
+        self.symTable["SensorDerecho"] = sensorValues[29]
+        self.symTable["SensorIzquierdo"] = sensorValues[2]
         # print("\n\n")
         # self.showSymTable()
-
-        self.reaction = [self.__evaluateTree(self.root), 0.0]
+        resp = self.__evaluateTree(self.root)
+        if resp == D1: #d1 no hace nada
+            self.reaction = [0.0,0.0]
+        elif resp == D2:
+            self.reaction = [0.0,0.0]
+        elif resp == D3:
+            self.reaction = [0.0,0.0]
+        elif resp == PARAR: #
+            self.reaction = [0.0,0.0]
+        elif resp == AVANZAR1:
+            self.reaction = [0.2,0.0]
+        elif resp == AVANZAR2:
+            self.reaction = [0.5,0.0]
+        elif resp == AVANZAR3:
+            self.reaction = [0.7,0.0]
+        elif resp == VUELTA:
+            self.reaction = [0.0,0.5]
         # print("reaction",self.reaction)
         return self.reaction
 
