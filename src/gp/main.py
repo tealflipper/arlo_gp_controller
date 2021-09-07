@@ -60,8 +60,8 @@ if __name__ == "__main__":
         gp.mutatePopulation()
         # print('pop', self.population)
     print("Best individual")
-    print("Aptitud:",gp.bestAptitud)
-    gp.bestParent.showTree()
+    print("Aptitud:",gp.bestEver.aptitud)
+    gp.bestEver.showTree()
     evaluateDriverClient(60,-1)
     # save gp to file
     with open ('gp.dat', 'wb') as gpFile:

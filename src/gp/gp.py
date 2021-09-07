@@ -27,6 +27,7 @@ class GeneticProgram:
         self.aptitudes:list = None
         self.bestAptitud = -9999
         self.bestParent:Tree = None
+        self.bestEver: Tree = None
         self.parents: list[int] = []
 
     
@@ -62,6 +63,7 @@ class GeneticProgram:
             for i in range(popSize):
                 self.population.append(Tree())
                 self.population[i].createTreeGrow(maxDepth)
+        self.bestEver = self.population[0]
         return self.population
             
 
@@ -79,12 +81,14 @@ class GeneticProgram:
         
         self.bestAptitud = max(self.aptitudes)
         self.bestParent  = self.population[self.aptitudes.index(self.bestAptitud)]
+
     
     def setBestAptitud(self):
         self.bestAptitud = max(self.aptitudes)
     
     def setBestParent(self):
         self.bestParent  = self.population[self.aptitudes.index(self.bestAptitud)]
+    
     
     def setAptitude(self, individualIndex: int, dist2go) -> None:
         """ sets aptitude for invidual given in population
@@ -97,8 +101,13 @@ class GeneticProgram:
         #get dist2go value from sim
         if dist2go == 0.0:
             dist2go = float('inf')
+            self.bestEver = individual
+            self.aptitud = float('inf')
         individual.aptitud = 1.0/ dist2go
         self.aptitudes[individualIndex]= individual.aptitud
+        if individual.aptitud > self.bestEver.aptitud:
+            print('new best ever')
+            self.bestEver = individual
         
     
     def __cross(self, A:Tree, B:Tree):

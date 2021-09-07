@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     with open ('gp.dat', 'rb') as gpFile:
         gp = pickle.load(gpFile)
-        gp.besParent = Tree()
+        gp.bestParent = gp.bestEver.copyTree()
         print('GP loaded from gp.dat\n')
         gp.population[0].showSymTable()
         
