@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-import rospy
-from gp import GeneticProgram
-
 
 if __name__ == "__main__":
 
-    rospy.init_node('gp', anonymous=True)
+    # rospy.init_node('gp', anonymous=True)
 
     # t1 = Tree()
     # t1.createTreeFull(5)
@@ -43,6 +40,13 @@ if __name__ == "__main__":
     # tt.showTree()
     # print("\n")
     # print(node.info)
-    print("Programa Genetico \n --------------------------------------\n")
-    gp = GeneticProgram(4, 3, 5, 'full', 0.2)
-    gp.showPopulation()
+    d =[{'parent': 1,'aptitud':9}]
+    d.append({'parent': 2,'aptitud':6})
+    d.append({'parent': 1,'aptitud':9})
+    d.append({'parent': 5,'aptitud':2})
+    d.append({'parent': 8,'aptitud':4})
+    d.append({'parent': 3,'aptitud':10})
+    print(d)
+    d=sorted(d, key=lambda x: x['aptitud'], reverse=True)
+    print(d)
+    print(d[-1])

@@ -4,6 +4,7 @@ from gpTree import Tree
 from gpNode import Node
 import random
 from arlo_gp_controller.srv import EvaluateTreeResponse
+import numpy
 import rospy
 
 #Import ros libraries
@@ -30,9 +31,21 @@ class GeneticProgram:
         self.bestEver: Tree = None
         self.parents: list[int] = []
 
+    def sortParents(self):
+        parentDict = []
+        for parentIndex in self.parents:
+            parentDict.append({'parent': parentIndex,'aptitud':self.aptitudes(parentIndex)})
+
+        parentDict = sorted(parentDict, key=lambda x: x['aptitud'], reverse=True)
+
+        for i in range(parentDict):
+            self.parents[i]=parentDict['parent']
+        self.parents[-1] = self.bestEver
+
+
     
     def mutatePopulation(self):
-        for individual in self.population:
+        for individual in self.population[:-1]:
             individual.mutate(self.pm)
 
     def cross(self):
@@ -47,6 +60,8 @@ class GeneticProgram:
             offspring.append(newOffspring1)
             offspring.append(newOffspring2)
         #will use generational selection for the moment
+        #now using elitism
+        offspring[-1] = self.bestEver
         self.population = offspring
 
     def setInitialPopulation(self):

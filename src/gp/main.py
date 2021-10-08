@@ -55,8 +55,9 @@ if __name__ == "__main__":
         gp.setParents('torneo')
         #cross
         #print(parents)
+        #sort parents for elitist strategy
+        gp.sortParents()
         gp.cross()
-        #     #mutate
         gp.mutatePopulation()
         # print('pop', self.population)
     print("Best individual")
