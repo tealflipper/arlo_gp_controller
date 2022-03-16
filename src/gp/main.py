@@ -37,7 +37,9 @@ if __name__ == "__main__":
     server = rospy.Service('evaluate_tree',EvaluateTree, handler=handleEvaluateTree)
     rospy.wait_for_service('evaluate_driver')
     evaluateDriverClient = rospy.ServiceProxy('evaluate_driver', EvaluateDriver)
-
+    f = open("report.txt", "w")
+    header = "{\n{popSize: "+str(popSize)+",\ngenerations: "+str(generations)+",\ntreeDepth: "+str(treeDepth)+",\n"+"treeType: full,\nmutationProbability: "+str(mutationProbability)+"},\n[\n"
+    f.write(header)
     gp.setInitialPopulation()
     print("Genetic Program Start")
     for generation in range(gp.maxGen):
@@ -50,20 +52,25 @@ if __name__ == "__main__":
 
         gp.setBestAptitud()
         gp.setBestParent()
-
         #select parents
         gp.setParents('torneo')
         #cross
         #print(parents)
+        #sort parents for elitist strategy
+        if generation!= 0:  gp.sortParents()
+        aptitudPopulationAverage = sum(gp.aptitudes)/gp.popSize
+        populationReport = ",{\nbestAptitud: "+str(gp.bestAptitud)+",\n"+"averageAptitud: "+str(aptitudPopulationAverage)+"\n}\n"
+        f.write(populationReport)
         gp.cross()
-        #     #mutate
         gp.mutatePopulation()
         # print('pop', self.population)
+    f.write("]}")
     print("Best individual")
     print("Aptitud:",gp.bestEver.aptitud)
     gp.bestEver.showTree()
     evaluateDriverClient(60,-1)
     # save gp to file
+    f.close()
     with open ('gp.dat', 'wb') as gpFile:
         pickle.dump(gp, gpFile )
         print('GP saved to gp.dat')

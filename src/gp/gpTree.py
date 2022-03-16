@@ -5,6 +5,7 @@ from ruleSet import RuleSet
 from rule import Rule
 from gpNode import Node
 from pprint import pprint
+from trayectorias import controlarRobot
 import random
 """ Note: currently, program only returns one of the actuator values needed for Gazebo and ROS
     In the future, this will need to change in evaluateTree method. Instead of returning self.reaction
@@ -34,6 +35,7 @@ class Tree:
     root:Node = None
     depth = 0
     reaction = None
+    aptitud = None
 
     def __init__(self)->Tree:
 
@@ -212,7 +214,11 @@ class Tree:
         elif resp == AVANZAR3:
             self.reaction = [0.7,0.0]
         elif resp == VUELTA:
-            self.reaction = [0.0,0.5]
+            print("insert ready made function here")
+            controlarRobot()
+            print("exit")
+
+            self.reaction = [0.0,0.0]
         # print("reaction",self.reaction)
         return self.reaction
 

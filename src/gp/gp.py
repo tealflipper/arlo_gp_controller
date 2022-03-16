@@ -4,6 +4,7 @@ from gpTree import Tree
 from gpNode import Node
 import random
 from arlo_gp_controller.srv import EvaluateTreeResponse
+import numpy
 import rospy
 
 #Import ros libraries
@@ -30,6 +31,44 @@ class GeneticProgram:
         self.bestEver: Tree = None
         self.parents: list[int] = []
 
+    def sortParents(self):
+        parentDict = []
+        for parentIndex in self.parents:
+            parentDict.append({'parent': parentIndex,'aptitud':self.aptitudes[parentIndex]})
+
+        parentDict = sorted(parentDict, key=lambda x: x['aptitud'], reverse=True)
+        print(parentDict)
+        for i in range(len(parentDict)):
+            self.parents[i]=parentDict[i]['parent']
+        print("best replaces worst: ", )
+        self.population[self.parents[-1]] = self.bestEver
+        self.aptitudes[-1]=self.bestEver.aptitud
+        parentDict = []
+        for parentIndex in self.parents:
+            parentDict.append({'parent': parentIndex,'aptitud':self.aptitudes[parentIndex]})
+        print(parentDict)
+
+    def sortPop(self):
+        parentDict = []
+        for parentIndex in self.parents:
+            parentDict.append({'parent': parentIndex,'aptitud':self.aptitudes[parentIndex]})
+
+        parentDict = sorted(parentDict, key=lambda x: x['aptitud'], reverse=True)
+        print(parentDict)
+        for i in range(len(parentDict)):
+            self.parents[i]=parentDict[i]['parent']
+            self.aptitudes[i] =parentDict[i]['aptitud']
+        print("best replaces worst")
+        self.population[self.parents[-1]] = self.bestEver
+        self.aptitudes[-1]=self.bestEver.aptitud
+        parentDict = []
+        for parentIndex in self.parents:
+            parentDict.append({'parent': parentIndex,'aptitud':self.aptitudes[parentIndex]})
+        print(parentDict)
+
+
+
+
     
     def mutatePopulation(self):
         for individual in self.population:
@@ -47,6 +86,7 @@ class GeneticProgram:
             offspring.append(newOffspring1)
             offspring.append(newOffspring2)
         #will use generational selection for the moment
+        #now using elitism
         self.population = offspring
 
     def setInitialPopulation(self):
@@ -105,10 +145,11 @@ class GeneticProgram:
             self.aptitud = float('inf')
         individual.aptitud = 1.0/ dist2go
         self.aptitudes[individualIndex]= individual.aptitud
-        if individual.aptitud > self.bestEver.aptitud:
-            print('new best ever')
+        if self.bestEver != None and individual.aptitud > self.bestEver.aptitud:
+            print('new best ever:',individual.aptitud, 'index: ',individualIndex)
             self.bestEver = individual
-        
+        elif self.bestEver == None:
+            self.bestEver = individual
     
     def __cross(self, A:Tree, B:Tree):
         #copies of A and B
