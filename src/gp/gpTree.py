@@ -218,7 +218,7 @@ class Tree:
             # controlarRobot()
             print("exit")
 
-            self.reaction = [0.0,0.0]
+            self.reaction = [0.0,0.2]
         # print("reaction",self.reaction)
         return self.reaction
 
