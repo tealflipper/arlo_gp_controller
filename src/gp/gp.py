@@ -143,6 +143,8 @@ class GeneticProgram:
             dist2go = float('inf')
             self.bestEver = individual
             self.aptitud = float('inf')
+            print('apt: ', self.aptitud)
+            self.bestParent = individual
         individual.aptitud = 1.0/ dist2go
         self.aptitudes[individualIndex]= individual.aptitud
         if self.bestEver != None and individual.aptitud > self.bestEver.aptitud:

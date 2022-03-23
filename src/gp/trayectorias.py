@@ -247,7 +247,7 @@ def tramo3(t):
 #---------------------------------------------------
 
 
-def callback(scanner_center,scanner_left, scanner_right):
+def callbackObstaculo(scanner_center,scanner_left, scanner_right):
     global rangosF
     global rangosL
     global rangosR
@@ -256,7 +256,7 @@ def callback(scanner_center,scanner_left, scanner_right):
     rangosR = scanner_right.ranges 
 
 
-def controlarRobot2():
+def controlarRobotObstaculo():
 
    global rangosF
    global rangosL
@@ -348,11 +348,11 @@ def controlarRobot2():
 #         scanner_right = message_filters.Subscriber('/arlo/laser/scan_right', LaserScan)
 
 #         ts = message_filters.TimeSynchronizer([scanner_center, scanner_left, scanner_right], 10)
-#         ts.registerCallback(callback)
+#         ts.registerCallback(callbackObstaculo)
 
 
 #         #Se llama al controlador del robot
-#         controlarRobot2()
+#         controlarRobotObstaculo()
 #     except rospy.ROSInterruptException:
 #         pass
 
@@ -433,12 +433,21 @@ def controlarRobot():
     if(isinf(rangosF[16])):
         vel_msg.linear.x = 0.4
         vel_msg.angular.z = 0.0
+        print("not turning anymore")
+        break
         if(isinf(rangosL[16]) and isinf(rangosR[16])):
             vel_msg.linear.x = 0.0
             vel_msg.angular.z = 0.0
+            print("not moving anymore")
+
+
     else:
 
         print("rango menor a un metro, vuelta")
+        print(rangosF[16], rangosL[16], rangosR[16])
+        if(rangosF[16]<=0.2 or rangosL[16] <= 0.2 or rangosR[16] <= 0.2): 
+            print("robot atorado")
+            break
         if(rangosF[16]<1.2): 
           vel_msg.linear.x, vel_msg.angular.z = getVel(0.5)
         else:
@@ -455,6 +464,19 @@ if __name__ == '__main__':
     try:
         rospy.init_node('trayectoria_robot', anonymous=True)
 
+        scanner_center= message_filters.Subscriber('/arlo/laser/scan_center', LaserScan)
+        scanner_left = message_filters.Subscriber('/arlo/laser/scan_left', LaserScan)
+        scanner_right = message_filters.Subscriber('/arlo/laser/scan_right', LaserScan)
+
+        ts = message_filters.TimeSynchronizer([scanner_center, scanner_left, scanner_right], 10)
+        ts.registerCallback(callback)
+
+        controlarRobot()
+    except rospy.ROSInterruptException:
+        pass
+
+def turnLeft():
+    try:
         scanner_center= message_filters.Subscriber('/arlo/laser/scan_center', LaserScan)
         scanner_left = message_filters.Subscriber('/arlo/laser/scan_left', LaserScan)
         scanner_right = message_filters.Subscriber('/arlo/laser/scan_right', LaserScan)

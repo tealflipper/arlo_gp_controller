@@ -5,7 +5,9 @@ from ruleSet import RuleSet
 from rule import Rule
 from gpNode import Node
 from pprint import pprint
-from trayectorias import controlarRobot
+from trayectorias import controlarRobot, callback, turnLeft
+import message_filters
+from sensor_msgs.msg import LaserScan
 import random
 """ Note: currently, program only returns one of the actuator values needed for Gazebo and ROS
     In the future, this will need to change in evaluateTree method. Instead of returning self.reaction
@@ -19,8 +21,8 @@ import random
 from std_msgs.msg import Float32MultiArray
 # from arlo_nn_controller.srv import *
 import rospy
-D1 = 1
-D2 = 1.5
+D1 = 0.5
+D2 = 1.2
 D3 = 2
 PARAR = 3
 AVANZAR1 = 4
@@ -50,8 +52,8 @@ class Tree:
         S.addNonTerminalRule(Rule("SiOtro", ("ER", "S", "S") ) )
         S.addTerminalRule(Rule("Parar", ("Parar")))
         S.addTerminalRule(Rule("Avanzar1", ("Avanzar1")))
-        S.addTerminalRule(Rule("Avanzar2", ("Avanzar2")))
-        S.addTerminalRule(Rule("Avanzar3", ("Avanzar3")))
+        # S.addTerminalRule(Rule("Avanzar2", ("Avanzar2")))
+        # S.addTerminalRule(Rule("Avanzar3", ("Avanzar3")))
         S.addTerminalRule(Rule("Vuelta", ("Vuelta")))
         self.rules["S"]= S
 
@@ -201,27 +203,34 @@ class Tree:
         resp = self.__evaluateTree(self.root)
         if resp == D1: #d1 no hace nada
             self.reaction = [0.0,0.0]
+            print("D1")
         elif resp == D2:
             self.reaction = [0.0,0.0]
+            print("D2")
         elif resp == D3:
             self.reaction = [0.0,0.0]
+            print("D3")
         elif resp == PARAR: #
             self.reaction = [0.0,0.0]
+            print("PARAR")
         elif resp == AVANZAR1:
-            self.reaction = [0.2,0.0]
+            self.reaction = [0.4,0.0]
+            print("A1")
         elif resp == AVANZAR2:
             self.reaction = [0.5,0.0]
+            print("A2")
         elif resp == AVANZAR3:
             self.reaction = [0.7,0.0]
+            print("A3")
         elif resp == VUELTA:
-            print("insert ready made function here")
-            # controlarRobot()
-            print("exit")
+            print("Vuelta")
+            turnLeft()
+            print("fin")
 
             self.reaction = [0.0,0.2]
         # print("reaction",self.reaction)
         return self.reaction
-
+    
     def showTree(self, spaces=None):
         self.__showTree(self.root, 0, spaces)
         print("\n")
