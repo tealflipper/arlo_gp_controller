@@ -140,12 +140,12 @@ class GeneticProgram:
         individual = self.population[individualIndex]
         #get dist2go value from sim
         if dist2go == 0.0:
-            dist2go = float('inf')
-            self.bestEver = individual
+            dist2go = 0.0000000000000000001
             self.aptitud = float('inf')
-            print('apt: ', self.aptitud)
-            self.bestParent = individual
-        individual.aptitud = 1.0/ dist2go
+            individual.aptitud = 1.0/ dist2go
+        else:
+            individual.aptitud = 1.0/ dist2go
+        print('apt: ', individual.aptitud)
         self.aptitudes[individualIndex]= individual.aptitud
         if self.bestEver != None and individual.aptitud > self.bestEver.aptitud:
             print('new best ever:',individual.aptitud, 'index: ',individualIndex)

@@ -203,31 +203,31 @@ class Tree:
         resp = self.__evaluateTree(self.root)
         if resp == D1: #d1 no hace nada
             self.reaction = [0.0,0.0]
-            print("D1")
+            # print("D1")
         elif resp == D2:
             self.reaction = [0.0,0.0]
-            print("D2")
+            # print("D2")
         elif resp == D3:
             self.reaction = [0.0,0.0]
-            print("D3")
+            # print("D3")
         elif resp == PARAR: #
             self.reaction = [0.0,0.0]
-            print("PARAR")
+            # print("PARAR")
         elif resp == AVANZAR1:
             self.reaction = [0.4,0.0]
-            print("A1")
+            # print("A1")
         elif resp == AVANZAR2:
             self.reaction = [0.5,0.0]
-            print("A2")
+            # print("A2")
         elif resp == AVANZAR3:
             self.reaction = [0.7,0.0]
-            print("A3")
+            # print("A3")
         elif resp == VUELTA:
             print("Vuelta")
             turnLeft()
             print("fin")
 
-            self.reaction = [0.0,0.2]
+            self.reaction = [0.0,0.0]
         # print("reaction",self.reaction)
         return self.reaction
     

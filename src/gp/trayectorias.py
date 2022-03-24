@@ -424,7 +424,7 @@ def controlarRobot():
    pubVel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
    vel_msg = Twist()
 
-   rate = rospy.Rate(100) 
+   rate = rospy.Rate(50) 
 
    while not rospy.is_shutdown():
 
@@ -433,6 +433,8 @@ def controlarRobot():
     if(isinf(rangosF[16])):
         vel_msg.linear.x = 0.4
         vel_msg.angular.z = 0.0
+        pubVel.publish(vel_msg)
+
         print("not turning anymore")
         break
         if(isinf(rangosL[16]) and isinf(rangosR[16])):
@@ -445,7 +447,7 @@ def controlarRobot():
 
         print("rango menor a un metro, vuelta")
         print(rangosF[16], rangosL[16], rangosR[16])
-        if(rangosF[16]<=0.2 or rangosL[16] <= 0.2 or rangosR[16] <= 0.2): 
+        if((rangosF[16]<=0.16 or rangosL[16] <= 0.20 or rangosR[16] <= 0.20 )): 
             print("robot atorado")
             break
         if(rangosF[16]<1.2): 
