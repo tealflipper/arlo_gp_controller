@@ -198,7 +198,6 @@ class Tree:
         self.symTable["SensorFrente"] = sensorValues[15]
         self.symTable["SensorDerecho"] = sensorValues[29]
         self.symTable["SensorIzquierdo"] = sensorValues[2]
-        print(sensorValues[15],sensorValues[29], sensorValues[2])
         # print("\n\n")
         # self.showSymTable()
         resp = self.__evaluateTree(self.root)
