@@ -380,6 +380,31 @@ rangosL = np.zeros(shape = (32,1))
 rangosR = np.zeros(shape = (32,1))
 
 
+
+def funcion1Right(t):
+    return -(0.3 + ((-1.5-0.3)/(1+(t/0.1)**2.4)))
+
+def getVelRight(t):
+    x1 = t
+    y1 = funcion1Right(x1)
+    x2 = x1 + 0.5
+    y2 = funcion1Right(x2)
+    
+    vector = np.array ([x2-x1, y2-y1])
+
+    #print(vector)
+    magnitud = LA.norm(vector)
+    #print("M: ",magnitud)
+    angulo = math.degrees(math.atan((y2-y1)/(x2-x1)))
+    #print("A: ",angulo)
+
+    angulo = (math.pi * (90-angulo))/180
+    
+    vl = magnitud/3
+    va = (angulo)/3
+    v = np.array ([vl, va])
+    return v
+
 def funcion1(t):
     return 0.3 + ((-1.5-0.3)/(1+(t/0.1)**2.4))
 
@@ -413,6 +438,54 @@ def callback(scanner_center,scanner_left, scanner_right):
     rangosL = scanner_left.ranges
     rangosR = scanner_right.ranges 
 
+
+
+def vueltaDerecha():
+
+   global rangosF
+   global rangosL
+   global rangosR
+
+
+   pubVel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+   vel_msg = Twist()
+
+   rate = rospy.Rate(50) 
+
+   while not rospy.is_shutdown():
+
+     
+
+    if(isinf(rangosF[16])):
+        vel_msg.linear.x = 0.4
+        vel_msg.angular.z = 0.0
+        pubVel.publish(vel_msg)
+
+        print("not turning anymore")
+        break
+        if(isinf(rangosL[16]) and isinf(rangosR[16])):
+            vel_msg.linear.x = 0.0
+            vel_msg.angular.z = 0.0
+            print("not moving anymore")
+
+
+    else:
+
+        print("rango menor a un metro, vuelta")
+        print(rangosF[16], rangosL[16], rangosR[16])
+        if((rangosF[16]<=0.16 or rangosL[16] <= 0.20 or rangosR[16] <= 0.20 )): 
+            print("robot atorado")
+            break
+        if(rangosF[16]<1.2): 
+          vel_msg.linear.x, vel_msg.angular.z = getVelRight(0.5)
+        else:
+            print("Se detecto")
+            vel_msg.linear.x, vel_msg.angular.z = getVelRight(0)
+
+
+    pubVel.publish(vel_msg)
+    print("Vl: ", vel_msg.linear.x, "Va: ", vel_msg.angular.z )
+    rate.sleep()
 
 def controlarRobot():
 
@@ -490,5 +563,17 @@ def turnLeft():
     except rospy.ROSInterruptException:
         pass
 
+def turnRight():
+    try:
+        scanner_center= message_filters.Subscriber('/arlo/laser/scan_center', LaserScan)
+        scanner_left = message_filters.Subscriber('/arlo/laser/scan_left', LaserScan)
+        scanner_right = message_filters.Subscriber('/arlo/laser/scan_right', LaserScan)
+
+        ts = message_filters.TimeSynchronizer([scanner_center, scanner_left, scanner_right], 10)
+        ts.registerCallback(callback)
+
+        vueltaDerecha()
+    except rospy.ROSInterruptException:
+        pass
 
 

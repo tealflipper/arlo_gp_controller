@@ -5,7 +5,7 @@ from ruleSet import RuleSet
 from rule import Rule
 from gpNode import Node
 from pprint import pprint
-from trayectorias import controlarRobot, callback, turnLeft
+from trayectorias import controlarRobot, callback, turnLeft, turnRight
 import message_filters
 from sensor_msgs.msg import LaserScan
 import random
@@ -224,7 +224,7 @@ class Tree:
             # print("A3")
         elif resp == VUELTA:
             print("Vuelta")
-            turnLeft()
+            turnRight()
             print("fin")
 
             self.reaction = [0.0,0.0]
