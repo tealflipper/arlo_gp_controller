@@ -382,7 +382,7 @@ rangosR = np.zeros(shape = (32,1))
 
 
 def funcion1Right(t):
-    return -(0.3 + ((-1.5-0.3)/(1+(t/0.1)**2.4)))
+    return (0.3 + ((-1.5-0.3)/(1+(t/0.1)**2.4)))
 
 def getVelRight(t):
     x1 = t
@@ -401,7 +401,7 @@ def getVelRight(t):
     angulo = (math.pi * (90-angulo))/180
     
     vl = magnitud/3
-    va = (angulo)/3
+    va = (angulo)/3 *-1
     v = np.array ([vl, va])
     return v
 
