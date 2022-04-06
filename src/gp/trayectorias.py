@@ -455,7 +455,7 @@ def vueltaDerecha():
    while not rospy.is_shutdown():
 
      
-
+    print("rangos trayectoria", rangosF[16], rangosL[16], rangosR[16])
     if(isinf(rangosF[16])):
         vel_msg.linear.x = 0.4
         vel_msg.angular.z = 0.0
@@ -546,7 +546,7 @@ if __name__ == '__main__':
         ts = message_filters.TimeSynchronizer([scanner_center, scanner_left, scanner_right], 10)
         ts.registerCallback(callback)
 
-        controlarRobot()
+        vueltaDerecha()
     except rospy.ROSInterruptException:
         pass
 
