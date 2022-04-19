@@ -28,7 +28,8 @@ PARAR = 3
 AVANZAR1 = 4
 AVANZAR2 = 5
 AVANZAR3 = 6
-VUELTA = 7
+VUELTAL = 7
+VUELTAR = 7
 #TODO: comunicate with simulator
 class Tree:
     rules={}
@@ -54,7 +55,8 @@ class Tree:
         S.addTerminalRule(Rule("Avanzar1", ("Avanzar1")))
         # S.addTerminalRule(Rule("Avanzar2", ("Avanzar2")))
         # S.addTerminalRule(Rule("Avanzar3", ("Avanzar3")))
-        S.addTerminalRule(Rule("Vuelta", ("Vuelta")))
+        S.addTerminalRule(Rule("VueltaL", ("VueltaL")))
+        S.addTerminalRule(Rule("VueltaR", ("VueltaR")))
         self.rules["S"]= S
 
         #reglas de expresion relacional
@@ -80,7 +82,8 @@ class Tree:
         self.symTable["Avanzar1"] = AVANZAR1
         self.symTable["Avanzar2"] = AVANZAR2
         self.symTable["Avanzar3"] = AVANZAR3
-        self.symTable["Vuelta"] = VUELTA
+        self.symTable["VueltaL"] = VUELTAL
+        self.symTable["VueltaR"] = VUELTAR
 
         # Esta línea se debe agregar cuando el simulador quiera evaluar el programa
         # symTable["SensorFrente"] = valor de entrada del programa;  
@@ -222,9 +225,15 @@ class Tree:
         elif resp == AVANZAR3:
             self.reaction = [0.7,0.0]
             # print("A3")
-        elif resp == VUELTA:
-            print("Vuelta")
+        elif resp == VUELTAR:
+            print("Vuelta der")
             turnRight()
+            print("fin")
+
+            self.reaction = [0.0,0.0]
+        elif resp == VUELTAL:
+            print("Vuelta izq")
+            turnLeft()
             print("fin")
 
             self.reaction = [0.0,0.0]
