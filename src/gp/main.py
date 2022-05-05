@@ -48,7 +48,7 @@ if __name__ == "__main__":
             print("\tIndividual: ",index)
             #maxtime, treeIndex
             driverResponse = evaluateDriverClient(60,index)
-            gp.setAptitude(index,driverResponse.dist2go)
+            gp.setAptitude(index,driverResponse.dist2go, driverResponse.time)
 
         gp.setBestAptitud()
         gp.setBestParent()

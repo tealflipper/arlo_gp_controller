@@ -130,7 +130,7 @@ class GeneticProgram:
         self.bestParent  = self.population[self.aptitudes.index(self.bestAptitud)]
     
     
-    def setAptitude(self, individualIndex: int, dist2go) -> None:
+    def setAptitude(self, individualIndex: int, dist2go, time) -> None:
         """ sets aptitude for invidual given in population
             individualIndex: index in population list in
         """
@@ -142,9 +142,9 @@ class GeneticProgram:
         if dist2go == 0.0:
             dist2go = 0.0000000000000000001
             self.aptitud = float('inf')
-            individual.aptitud = 1.0/ dist2go
+            individual.aptitud = 1.0/ (dist2go + time)
         else:
-            individual.aptitud = 1.0/ dist2go
+            individual.aptitud = 1.0/ (dist2go + time)
         print('apt: ', individual.aptitud)
         self.aptitudes[individualIndex]= individual.aptitud
         if self.bestEver != None and individual.aptitud > self.bestEver.aptitud:

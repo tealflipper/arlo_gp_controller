@@ -567,7 +567,7 @@ def controlarRobot():
 
         print("rango menor a un metro, vuelta")
         print(rangosF[16], rangosL[16], rangosR[16])
-        if((rangosF[16]<=0.16 or rangosL[16] <= 0.20 or rangosR[16] <= 0.20 )): 
+        if((rangosF[16]<=0.16 or rangosL[16] <= 0.20 or rangosR[16] <= 0.16 )): 
             print("robot atorado")
             break
         if(rangosF[16]<1.2): 

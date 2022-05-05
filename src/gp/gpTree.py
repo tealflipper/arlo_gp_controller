@@ -53,8 +53,8 @@ class Tree:
         S.addNonTerminalRule(Rule("SiOtro", ("ER", "S", "S") ) )
         S.addTerminalRule(Rule("Parar", ("Parar")))
         S.addTerminalRule(Rule("Avanzar1", ("Avanzar1")))
-        # S.addTerminalRule(Rule("Avanzar2", ("Avanzar2")))
-        # S.addTerminalRule(Rule("Avanzar3", ("Avanzar3")))
+        S.addTerminalRule(Rule("Avanzar2", ("Avanzar2")))
+        S.addTerminalRule(Rule("Avanzar3", ("Avanzar3")))
         S.addTerminalRule(Rule("VueltaL", ("VueltaL")))
         S.addTerminalRule(Rule("VueltaR", ("VueltaR")))
         self.rules["S"]= S
@@ -68,16 +68,16 @@ class Tree:
         #Reglas para expresiones
         E = RuleSet("E")
         E.addTerminalRule(Rule("d1", ("d1")))
-        # E.addTerminalRule(Rule("d2", ("d2")))
-        # E.addTerminalRule(Rule("d3", ("d3")))
+        E.addTerminalRule(Rule("d2", ("d2")))
+        E.addTerminalRule(Rule("d3", ("d3")))
         E.addTerminalRule(Rule("SensorFrente", ("SensorFrente")))
         E.addTerminalRule(Rule("SensorDerecho", ("SensorDerecho")))
         E.addTerminalRule(Rule("SensorIzquierdo", ("SensorIzquierdo")))
         self.rules["E"]=E
 
         self.symTable["d1"] = D1
-        # self.symTable["d2"] = D2
-        # self.symTable["d3"] = D3
+        self.symTable["d2"] = D2
+        self.symTable["d3"] = D3
         self.symTable["Parar"] = PARAR
         self.symTable["Avanzar1"] = AVANZAR1
         self.symTable["Avanzar2"] = AVANZAR2
