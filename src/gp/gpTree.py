@@ -21,7 +21,7 @@ import random
 from std_msgs.msg import Float32MultiArray
 # from arlo_nn_controller.srv import *
 import rospy
-D1 = 0.5
+D1 = 0.8
 D2 = 1.2
 D3 = 2
 PARAR = 3
@@ -29,7 +29,7 @@ AVANZAR1 = 4
 AVANZAR2 = 5
 AVANZAR3 = 6
 VUELTAL = 7
-VUELTAR = 7
+VUELTAR = 8
 #TODO: comunicate with simulator
 class Tree:
     rules={}

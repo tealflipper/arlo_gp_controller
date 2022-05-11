@@ -498,10 +498,12 @@ def vueltaDerecha():
    vel_msg = Twist()
 
    rate = rospy.Rate(50) 
-
+   count = 0
    while not rospy.is_shutdown():
 
-     
+    count +=1
+    if count > 1000:
+        break
     print("rangos trayectoria", rangosF[16], rangosL[16], rangosR[16])
     if(isinf(rangosF[16])):
         vel_msg.linear.x = 0.4
@@ -518,9 +520,9 @@ def vueltaDerecha():
 
     else:
 
-        print("rango menor a un metro, vuelta")
+        print("rango menor a un metro, vuelta derecha")
         print(rangosF[16], rangosL[16], rangosR[16])
-        if((rangosF[16]<=0.16 or rangosL[16] <= 0.20 or rangosR[16] <= 0.20 )): 
+        if(rangosF[16]<=0.17 or rangosL[16] <= 0.20 or rangosR[16] <= 0.20): 
             print("robot atorado")
             break
         if(rangosF[16]<1.2): 
@@ -545,11 +547,14 @@ def controlarRobot():
    vel_msg = Twist()
 
    rate = rospy.Rate(50) 
-
+   count = 0
    while not rospy.is_shutdown():
+    
 
      
-
+    count +=1
+    if count > 1000:
+        break
     if(isinf(rangosF[16])):
         vel_msg.linear.x = 0.4
         vel_msg.angular.z = 0.0
@@ -565,9 +570,9 @@ def controlarRobot():
 
     else:
 
-        print("rango menor a un metro, vuelta")
+        print("rango menor a un metro, vuelta izquierda")
         print(rangosF[16], rangosL[16], rangosR[16])
-        if((rangosF[16]<=0.16 or rangosL[16] <= 0.20 or rangosR[16] <= 0.16 )): 
+        if((rangosF[16]<=0.17 or rangosL[16] <= 0.20 or rangosR[16] <= 0.20  )): 
             print("robot atorado")
             break
         if(rangosF[16]<1.2): 
